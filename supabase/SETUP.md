@@ -62,5 +62,6 @@ UPDATE profiles SET is_admin = true WHERE email = 'your-client@email.com';
 
 ## 6. Cron (reservation expiry)
 
-`vercel.json` runs `/api/cron/release-reservations` every 5 minutes.
-Set `CRON_SECRET` in Vercel so the job can authorize.
+`vercel.json` schedules `/api/cron/release-reservations` daily at 04:00 UTC (Hobby plan limit).
+Unpaid holds are also released whenever someone reserves tickets.
+Set `CRON_SECRET` in Vercel so the cron endpoint can authorize.

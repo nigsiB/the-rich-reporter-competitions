@@ -24,6 +24,8 @@
 .DS_Store
 .cursor/
 *.pem
+public/API keys.txt
+**/API keys.txt
 
 # debug
 npm-debug.log*

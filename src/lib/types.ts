@@ -25,6 +25,9 @@ export type CompetitionAdminInput = {
   prizeDescription: string;
   totalEntries: number;
   pricePerEntry: number;
+  cashAlternative: number;
+  retailValue: number;
+  isMonthly: boolean;
   drawDate: string;
   imageUrl: string;
   displayOrder: number;

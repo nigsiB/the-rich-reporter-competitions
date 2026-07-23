@@ -1,21 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Competition } from "@/data/competitions";
+import { formatUsd } from "@/data/competitions";
 import CountdownTimer from "@/components/CountdownTimer";
 import InventoryBar from "@/components/InventoryBar";
+import type { Dictionary } from "@/i18n/dictionaries";
+import { t } from "@/i18n/dictionaries";
 
 type CompetitionCardProps = {
   competition: Competition;
   index: number;
+  dict: Dictionary;
 };
 
-export default function CompetitionCard({ competition, index }: CompetitionCardProps) {
-  const price = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(competition.pricePerEntry);
+export default function CompetitionCard({ competition, index, dict }: CompetitionCardProps) {
+  const price = formatUsd(competition.pricePerEntry);
 
   return (
     <article className="group flex flex-col" style={{ animationDelay: `${index * 60}ms` }}>
@@ -28,7 +27,7 @@ export default function CompetitionCard({ competition, index }: CompetitionCardP
           alt={competition.title}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover brightness-[0.88] contrast-[1.08] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+          className="object-cover brightness-[0.72] contrast-[1.12] saturate-[0.85] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
           priority={index < 2}
         />
         <div
@@ -37,8 +36,13 @@ export default function CompetitionCard({ competition, index }: CompetitionCardP
         />
         <div className="absolute bottom-0 left-0 right-0 p-6">
           <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--champagne)]">
-            Limited to {competition.totalEntries.toLocaleString("en-US")} entries
+            {dict.limitedTo} {competition.totalEntries.toLocaleString("en-US")} {dict.entriesWord}
           </p>
+          {competition.isMonthly ? (
+            <p className="mt-2 text-[9px] uppercase tracking-[0.22em] text-[var(--fg)]/80">
+              {dict.monthly}
+            </p>
+          ) : null}
         </div>
       </Link>
 
@@ -55,13 +59,17 @@ export default function CompetitionCard({ competition, index }: CompetitionCardP
           <p className="shrink-0 text-[11px] uppercase tracking-[0.18em] text-[var(--muted)]">
             {price}
             <span className="block text-[9px] tracking-[0.14em] text-[var(--muted)]/70">
-              per entry
+              {dict.perEntry}
             </span>
           </p>
         </div>
 
         <p className="line-clamp-2 text-sm leading-relaxed text-[var(--muted)]">
           {competition.prizeDescription}
+        </p>
+
+        <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--champagne)]/80">
+          {dict.cashAlternative}: {formatUsd(competition.cashAlternative)}
         </p>
 
         <div className="mt-auto space-y-3 pt-2">
@@ -73,6 +81,9 @@ export default function CompetitionCard({ competition, index }: CompetitionCardP
             totalEntries={competition.totalEntries}
             initialAvailable={competition.entriesRemaining}
           />
+          <p className="sr-only">
+            {t(dict, "cashAltLine", { amount: formatUsd(competition.cashAlternative) })}
+          </p>
         </div>
       </div>
     </article>

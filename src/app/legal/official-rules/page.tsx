@@ -21,7 +21,8 @@ export default function OfficialRulesPage() {
         </h2>
         <p>
           Competitions are sponsored by Rich Reporter Magazine (“Sponsor”). Specific prize details,
-          entry caps, and draw dates appear on each competition page.
+          entry caps, retail values, cash alternatives, and draw dates appear on each competition
+          page.
         </p>
       </section>
 
@@ -30,9 +31,11 @@ export default function OfficialRulesPage() {
           2. Eligibility
         </h2>
         <p>
-          Open to legal residents of the United States (and where expressly stated, Canada excluding
-          Quebec) who are 18 years of age or older at the time of entry. Employees of Sponsor and
-          their immediate family members are not eligible. Void where prohibited.
+          Open to natural persons aged 18 years or older (or the age of majority in their place of
+          residence, if higher) at the time of entry, except where prohibited by law. Employees of
+          Sponsor and their immediate family members are not eligible. Void where prohibited.
+          Eligibility on any given competition page may be narrowed by jurisdiction; where a page
+          does not restrict entry, international participation is permitted subject to local law.
         </p>
       </section>
 
@@ -42,9 +45,10 @@ export default function OfficialRulesPage() {
         </h2>
         <p>
           Paid entry: registered members may purchase entries subject to the competition’s entry
-          limit and pricing. Alternative Method of Entry (AMOE): free mail-in forms are available
-          at /amoe. Limit one free mail-in entry per outer envelope unless a competition page states
-          otherwise. Purchase does not improve odds of winning relative to a free entry.
+          limit and pricing (standard entry price USD $0.25 unless a page states otherwise).
+          Alternative Method of Entry (AMOE): free mail-in forms are available at /amoe. Limit one
+          free mail-in entry per outer envelope unless a competition page states otherwise. Purchase
+          does not improve odds of winning relative to a free entry.
         </p>
       </section>
 
@@ -60,23 +64,55 @@ export default function OfficialRulesPage() {
 
       <section className="space-y-3">
         <h2 className="font-[family-name:var(--font-display)] text-2xl text-[var(--fg)]">
-          5. Prizes & taxes
+          5. Prizes, cash alternatives & taxes
         </h2>
         <p>
-          Prizes are as described on the competition page. Winners are responsible for all
-          applicable taxes and any costs not expressly included. Sponsor may require an affidavit of
+          Prizes are as described on the competition page. Every prize offers a tax-free cash
+          alternative (shown on the competition page and typically set below approximate retail
+          value — for example, an iPhone with ~USD $1,200 retail may carry a ~USD $1,000 cash
+          alternative). The sole winner may elect either the stated prize or the published cash
+          alternative. Election must be made within the timeframe stated in winner notification (or
+          within 14 days if none is stated). Cash alternatives are paid in USD by bank transfer or
+          other method Sponsor reasonably designates after identity verification.
+        </p>
+        <p>
+          Winners are responsible for any taxes, duties, or fees not expressly included, except that
+          cash alternatives are described as tax-free from Sponsor’s side to the extent permitted by
+          law — winners should seek their own tax advice. Sponsor may require an affidavit of
           eligibility and publicity release where lawful.
+        </p>
+        <p className="text-[var(--fg)]/90">
+          Illustrative lineup (subject to live competition pages): (1) monthly rolling free magazine
+          advert — cash alt USD $1,000; (2) cash prize USD $1,000; (3) iPhone 17 — retail ~USD
+          $1,200 / cash alt USD $1,000; (4) iPad — retail ~USD $849 / cash alt USD $700; (5) Samsung
+          laptop — retail ~USD $1,299 / cash alt USD $1,000.
         </p>
       </section>
 
       <section className="space-y-3">
         <h2 className="font-[family-name:var(--font-display)] text-2xl text-[var(--fg)]">
-          6. General
+          6. Worldwide delivery
         </h2>
         <p>
-          Sponsor reserves the right to cancel, suspend, or modify a competition if fraud,
-          technical failures, or any other factor impairs integrity. By entering, you agree to these
-          Official Rules and Sponsor’s Privacy Policy.
+          <strong className="font-medium text-[var(--fg)]">
+            We deliver prizes worldwide.
+          </strong>{" "}
+          Sponsor arranges shipping and fulfilment of physical prizes to the winner’s verified
+          address wherever practicable. Delivery timing varies by destination, customs, and carrier.
+          Import duties or local taxes at destination, if any, are the winner’s responsibility unless
+          Sponsor expressly agrees otherwise in writing. If delivery to a particular location is
+          unlawful or commercially impracticable, Sponsor may offer the cash alternative instead.
+        </p>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="font-[family-name:var(--font-display)] text-2xl text-[var(--fg)]">
+          7. General
+        </h2>
+        <p>
+          Sponsor reserves the right to cancel, suspend, or modify a competition if fraud, technical
+          failures, or any other factor impairs integrity. By entering, you agree to these Official
+          Rules and Sponsor’s Privacy Policy.
         </p>
       </section>
 

@@ -32,6 +32,9 @@ export default function CompetitionForm({ mode, competitionId, initial }: Compet
       prizeDescription: String(form.get("prizeDescription") ?? ""),
       totalEntries: Number(form.get("totalEntries") ?? 0),
       pricePerEntry: Number(form.get("pricePerEntry") ?? 0),
+      cashAlternative: Number(form.get("cashAlternative") ?? 0),
+      retailValue: Number(form.get("retailValue") ?? 0),
+      isMonthly: form.get("isMonthly") === "on",
       drawDate: String(form.get("drawDate") ?? ""),
       imageUrl: String(form.get("imageUrl") ?? ""),
       displayOrder: Number(form.get("displayOrder") ?? 0),
@@ -121,6 +124,39 @@ export default function CompetitionForm({ mode, competitionId, initial }: Compet
           />
         </div>
         <div>
+          <label htmlFor="retailValue" className={labelClass}>
+            Approx. retail value (USD)
+          </label>
+          <input
+            id="retailValue"
+            name="retailValue"
+            type="number"
+            min={0}
+            step="0.01"
+            required
+            defaultValue={initial?.retailValue ?? 0}
+            className={fieldClass}
+          />
+        </div>
+        <div>
+          <label htmlFor="cashAlternative" className={labelClass}>
+            Cash alternative (USD)
+          </label>
+          <input
+            id="cashAlternative"
+            name="cashAlternative"
+            type="number"
+            min={0}
+            step="0.01"
+            required
+            defaultValue={initial?.cashAlternative ?? 0}
+            className={fieldClass}
+          />
+          <p className="mt-2 text-xs text-[var(--muted)]">
+            Typically below retail (e.g. $1,200 retail → ~$1,000 cash).
+          </p>
+        </div>
+        <div>
           <label htmlFor="drawDate" className={labelClass}>
             Draw date
           </label>
@@ -175,6 +211,16 @@ export default function CompetitionForm({ mode, competitionId, initial }: Compet
           />
         </div>
       </div>
+
+      <label className="flex items-start gap-3 text-sm text-[var(--muted)]">
+        <input
+          type="checkbox"
+          name="isMonthly"
+          defaultChecked={initial?.isMonthly ?? false}
+          className="mt-1 accent-[var(--champagne)]"
+        />
+        <span>Rolling monthly draw (e.g. magazine advert)</span>
+      </label>
 
       {mode === "create" ? (
         <label className="flex items-start gap-3 text-sm text-[var(--muted)]">

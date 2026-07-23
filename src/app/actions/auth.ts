@@ -2,6 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { recordMarketingEmail } from "@/lib/marketing";
 import type { ActionResult, MembershipSignupInput } from "@/lib/types";
 import { redirect } from "next/navigation";
 
@@ -82,6 +83,13 @@ export async function signUpMemberAction(
       error: `Account created, but profile could not be saved: ${profileError.message}`,
     };
   }
+
+  await recordMarketingEmail({
+    email: input.email,
+    fullName: input.fullName,
+    source: "signup",
+    optedIn: input.marketingOptIn,
+  });
 
   return {
     success: true,

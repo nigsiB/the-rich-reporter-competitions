@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { createCheckoutPaymentIntent } from "@/app/actions/tickets";
+import { SUB_SECRET_KEY } from "@/components/SubscribeMonthlyBtn";
 import { primaryBtnClass } from "@/components/formStyles";
 import Link from "next/link";
 
@@ -11,9 +12,16 @@ const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "";
 
 type CheckoutClientProps = {
   ticketIds: string[];
+  subscriptionId?: string;
 };
 
-function PaymentForm({ amountCents }: { amountCents: number }) {
+function PaymentForm({
+  amountCents,
+  mode,
+}: {
+  amountCents: number;
+  mode: "tickets" | "subscription";
+}) {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -54,6 +62,11 @@ function PaymentForm({ amountCents }: { amountCents: number }) {
     }
 
     if (result.paymentIntent?.status === "succeeded") {
+      try {
+        sessionStorage.removeItem(SUB_SECRET_KEY);
+      } catch {
+        /* ignore */
+      }
       setSucceeded(true);
       setLoading(false);
       return;
@@ -70,7 +83,9 @@ function PaymentForm({ amountCents }: { amountCents: number }) {
           Payment received
         </h2>
         <p className="text-sm text-[var(--muted)]">
-          Your entries are being finalized. A receipt will arrive by email.
+          {mode === "subscription"
+            ? "Your Patron Circle subscription is active."
+            : "Your entries are being finalized. A receipt will arrive by email."}
         </p>
         <Link
           href="/#competitions"
@@ -89,23 +104,28 @@ function PaymentForm({ amountCents }: { amountCents: number }) {
           layout: "tabs",
         }}
       />
+      <p className="text-xs leading-relaxed text-[var(--muted)]">
+        International cards and local payment methods (where enabled) accepted. Charged in USD via
+        Stripe Custom Elements — you stay on this page unless your bank requires verification.
+      </p>
       {error ? (
         <p className="text-sm text-red-400/90" role="alert">
           {error}
         </p>
       ) : null}
       <button type="submit" disabled={!stripe || loading} className={primaryBtnClass}>
-        {loading ? "Processing…" : `Pay ${formatted}`}
+        {loading ? "Processing…" : amountCents > 0 ? `Pay ${formatted}` : "Confirm payment"}
       </button>
     </form>
   );
 }
 
-export default function CheckoutClient({ ticketIds }: CheckoutClientProps) {
+export default function CheckoutClient({ ticketIds, subscriptionId }: CheckoutClientProps) {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [amount, setAmount] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [isSubscription, setIsSubscription] = useState(Boolean(subscriptionId));
 
   const stripePromise = useMemo(() => {
     if (!publishableKey || publishableKey.includes("pk_test_...")) return null;
@@ -114,7 +134,44 @@ export default function CheckoutClient({ ticketIds }: CheckoutClientProps) {
 
   useEffect(() => {
     let cancelled = false;
+
     (async () => {
+      if (subscriptionId) {
+        try {
+          const raw = sessionStorage.getItem(SUB_SECRET_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw) as {
+              subscriptionId?: string;
+              clientSecret?: string;
+              at?: number;
+            };
+            const fresh = parsed.at && Date.now() - parsed.at < 30 * 60 * 1000;
+            if (
+              fresh &&
+              parsed.clientSecret &&
+              (!parsed.subscriptionId || parsed.subscriptionId === subscriptionId)
+            ) {
+              if (!cancelled) {
+                setClientSecret(parsed.clientSecret);
+                setIsSubscription(true);
+                setLoading(false);
+              }
+              return;
+            }
+          }
+        } catch {
+          /* fall through */
+        }
+        if (!cancelled) {
+          setError(
+            "Subscription checkout expired. Return to Membership and start the monthly subscribe flow again.",
+          );
+          setIsSubscription(true);
+          setLoading(false);
+        }
+        return;
+      }
+
       setLoading(true);
       const result = await createCheckoutPaymentIntent(ticketIds);
       if (cancelled) return;
@@ -125,14 +182,16 @@ export default function CheckoutClient({ ticketIds }: CheckoutClientProps) {
       }
       setClientSecret(result.data!.clientSecret);
       setAmount(result.data!.amount);
+      setIsSubscription(false);
       setLoading(false);
     })();
+
     return () => {
       cancelled = true;
     };
-  }, [ticketIds]);
+  }, [ticketIds, subscriptionId]);
 
-  if (!ticketIds.length) {
+  if (!ticketIds.length && !subscriptionId) {
     return (
       <div className="space-y-6 text-center">
         <h1 className="font-[family-name:var(--font-display)] text-3xl tracking-wide text-[var(--fg)]">
@@ -158,8 +217,7 @@ export default function CheckoutClient({ ticketIds }: CheckoutClientProps) {
           Checkout
         </h1>
         <p className="text-sm text-[var(--muted)]">
-          {ticketIds.length} entr{ticketIds.length === 1 ? "y" : "ies"} reserved. Add Stripe keys to
-          enable Custom Elements payment.
+          Add Stripe keys to enable Custom Elements payment (international cards, USD).
         </p>
       </div>
     );
@@ -179,8 +237,11 @@ export default function CheckoutClient({ ticketIds }: CheckoutClientProps) {
         <p className="text-sm text-red-400/90" role="alert">
           {error || "Unable to start checkout."}
         </p>
-        <Link href="/#competitions" className="text-[10px] uppercase tracking-[0.24em] text-[var(--champagne)]">
-          Return to collection
+        <Link
+          href={isSubscription ? "/membership" : "/#competitions"}
+          className="text-[10px] uppercase tracking-[0.24em] text-[var(--champagne)]"
+        >
+          {isSubscription ? "Back to membership" : "Return to collection"}
         </Link>
       </div>
     );
@@ -192,11 +253,12 @@ export default function CheckoutClient({ ticketIds }: CheckoutClientProps) {
         Checkout
       </p>
       <h1 className="mt-4 text-center font-[family-name:var(--font-display)] text-3xl tracking-wide text-[var(--fg)] md:text-4xl">
-        Complete your entry
+        {isSubscription ? "Patron Circle" : "Complete your entry"}
       </h1>
       <p className="mt-4 text-center text-sm text-[var(--muted)]">
-        {ticketIds.length} entr{ticketIds.length === 1 ? "y" : "ies"} held · payment processed
-        securely by Stripe
+        {isSubscription
+          ? "Monthly subscription · international payments via Stripe"
+          : `${ticketIds.length} entr${ticketIds.length === 1 ? "y" : "ies"} held · payment processed securely by Stripe`}
       </p>
       <div className="mt-10 border border-[var(--border)] bg-[var(--bg-elevated)] px-6 py-8 md:px-8">
         <Elements
@@ -216,7 +278,10 @@ export default function CheckoutClient({ ticketIds }: CheckoutClientProps) {
             },
           }}
         >
-          <PaymentForm amountCents={amount} />
+          <PaymentForm
+            amountCents={amount}
+            mode={isSubscription ? "subscription" : "tickets"}
+          />
         </Elements>
       </div>
     </div>

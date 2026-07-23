@@ -4,8 +4,11 @@ import { notFound } from "next/navigation";
 import CountdownTimer from "@/components/CountdownTimer";
 import InventoryBar from "@/components/InventoryBar";
 import TicketCheckoutBtn from "@/components/TicketCheckoutBtn";
-import { competitions } from "@/data/competitions";
+import { competitions, formatUsd } from "@/data/competitions";
 import { getLiveCompetitionById } from "@/lib/competitions";
+import { getSessionProfile } from "@/app/actions/auth";
+import { getDictionary } from "@/i18n/getDictionary";
+import { t } from "@/i18n/dictionaries";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -30,12 +33,11 @@ export default async function CompetitionPage({ params }: PageProps) {
   const { competition } = await getLiveCompetitionById(id);
   if (!competition) notFound();
 
-  const price = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(competition.pricePerEntry);
+  const { dict } = await getDictionary();
+  const { user } = await getSessionProfile();
+  const price = formatUsd(competition.pricePerEntry);
+  const cashAlt = formatUsd(competition.cashAlternative);
+  const returnPath = `/competitions/${competition.id}`;
 
   return (
     <main className="pt-28">
@@ -47,7 +49,7 @@ export default async function CompetitionPage({ params }: PageProps) {
             fill
             priority
             sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover brightness-[0.88] contrast-[1.08]"
+            className="object-cover brightness-[0.72] contrast-[1.12] saturate-[0.85]"
           />
           <div
             className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--bg-deep)]/55 via-transparent to-[var(--bg-deep)]/20"
@@ -60,11 +62,12 @@ export default async function CompetitionPage({ params }: PageProps) {
             href="/#competitions"
             className="mb-8 w-fit text-[10px] uppercase tracking-[0.28em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)]"
           >
-            ← Collection
+            {dict.backCollection}
           </Link>
 
           <p className="text-[10px] uppercase tracking-[0.35em] text-[var(--champagne)]">
-            Limited to {competition.totalEntries.toLocaleString("en-US")} entries
+            {dict.limitedTo} {competition.totalEntries.toLocaleString("en-US")} {dict.entriesWord}
+            {competition.isMonthly ? " · Monthly" : ""}
           </p>
           <h1 className="mt-4 font-[family-name:var(--font-display)] text-4xl tracking-wide text-[var(--fg)] md:text-5xl lg:text-6xl">
             {competition.title}
@@ -76,7 +79,7 @@ export default async function CompetitionPage({ params }: PageProps) {
           <div className="mt-10 space-y-4 border-y border-[var(--border)] py-8">
             <div className="flex items-center justify-between">
               <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
-                Live inventory
+                {dict.liveInventory}
               </span>
               <CountdownTimer drawDate={competition.drawDate} />
             </div>
@@ -86,28 +89,35 @@ export default async function CompetitionPage({ params }: PageProps) {
               initialAvailable={competition.entriesRemaining}
             />
             <p className="text-sm text-[var(--muted)]">
-              <span className="text-[var(--fg)]">{price}</span> per entry · choose 1–1,000 below
+              <span className="text-[var(--fg)]">{price}</span> {dict.perEntry} · {dict.chooseQty}
             </p>
+            <p className="text-xs leading-relaxed text-[var(--muted)]">
+              {t(dict, "cashAltLine", { amount: cashAlt })}
+            </p>
+            <p className="text-xs leading-relaxed text-[var(--muted)]">{dict.worldwide}</p>
           </div>
 
           <div className="mt-10">
             <TicketCheckoutBtn
               competitionId={competition.id}
               pricePerEntry={competition.pricePerEntry}
+              isAuthenticated={Boolean(user)}
+              returnPath={returnPath}
+              dict={dict}
             />
           </div>
 
           <p className="mt-6 text-xs leading-relaxed text-[var(--muted)]">
-            No purchase necessary. See{" "}
+            {dict.noPurchase}{" "}
             <Link href="/amoe" className="text-[var(--champagne)] underline-offset-4 hover:underline">
-              Alternative Method of Entry
+              {dict.amoe}
             </Link>{" "}
-            and{" "}
+            {dict.and}{" "}
             <Link
               href="/legal/official-rules"
               className="text-[var(--champagne)] underline-offset-4 hover:underline"
             >
-              Official Rules
+              {dict.officialRules}
             </Link>
             .
           </p>

@@ -2,6 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { recordMarketingEmail } from "@/lib/marketing";
 import type { ActionResult, ContactInput } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 
@@ -30,6 +31,13 @@ export async function submitContactAction(input: ContactInput): Promise<ActionRe
   if (error) {
     return { success: false, error: "Unable to send your message. Please try again." };
   }
+
+  await recordMarketingEmail({
+    email: input.email,
+    fullName: input.fullName,
+    source: "contact",
+    optedIn: true,
+  });
 
   revalidatePath("/admin/messages");
   return { success: true, message: "Thank you. We will respond shortly." };

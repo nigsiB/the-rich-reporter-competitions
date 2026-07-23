@@ -2,6 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { recordMarketingEmail } from "@/lib/marketing";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import type { ActionResult } from "@/lib/types";
 import { revalidatePath } from "next/cache";
@@ -121,6 +122,7 @@ export async function createCheckoutPaymentIntent(
   const paymentIntent = await stripe.paymentIntents.create({
     amount,
     currency: "usd",
+    // Enables international cards, wallets, and local methods where available — Payment Element (no full redirect)
     automatic_payment_methods: { enabled: true },
     metadata: {
       user_id: user.id,
@@ -129,6 +131,14 @@ export async function createCheckoutPaymentIntent(
     },
     receipt_email: user.email ?? undefined,
   });
+
+  if (user.email) {
+    await recordMarketingEmail({
+      email: user.email,
+      source: "checkout",
+      optedIn: true,
+    });
+  }
 
   await supabase.from("tickets").update({ payment_intent_id: paymentIntent.id }).in(
     "id",

@@ -30,6 +30,38 @@ async function fulfillPayment(paymentIntent: Stripe.PaymentIntent) {
     .eq("stripe_payment_intent_id", paymentIntent.id);
 }
 
+async function syncSubscription(subscription: Stripe.Subscription) {
+  const supabase = createServiceClient();
+  const price = subscription.items.data[0]?.price;
+  const periodEnd =
+    "current_period_end" in subscription && typeof subscription.current_period_end === "number"
+      ? new Date(subscription.current_period_end * 1000).toISOString()
+      : null;
+
+  await supabase.from("subscriptions").upsert(
+    {
+      user_id: subscription.metadata.user_id || null,
+      email:
+        typeof subscription.customer === "string"
+          ? ""
+          : ((subscription.customer as Stripe.Customer)?.email ?? ""),
+      stripe_customer_id:
+        typeof subscription.customer === "string"
+          ? subscription.customer
+          : subscription.customer.id,
+      stripe_subscription_id: subscription.id,
+      stripe_price_id: price?.id ?? null,
+      status: subscription.status,
+      amount_cents: price?.unit_amount ?? 0,
+      currency: price?.currency ?? "usd",
+      interval: price?.recurring?.interval ?? "month",
+      current_period_end: periodEnd,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "stripe_subscription_id" },
+  );
+}
+
 export async function POST(request: Request) {
   const stripe = getStripe();
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -54,21 +86,43 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: message }, { status: 400 });
   }
 
-  if (event.type === "payment_intent.succeeded") {
-    await fulfillPayment(event.data.object as Stripe.PaymentIntent);
-  }
-
-  if (event.type === "payment_intent.payment_failed") {
-    const pi = event.data.object as Stripe.PaymentIntent;
-    try {
-      const supabase = createServiceClient();
-      await supabase
-        .from("payments")
-        .update({ status: "failed", updated_at: new Date().toISOString() })
-        .eq("stripe_payment_intent_id", pi.id);
-    } catch {
-      // ignore when service role missing in local demo
+  try {
+    switch (event.type) {
+      case "payment_intent.succeeded":
+        await fulfillPayment(event.data.object as Stripe.PaymentIntent);
+        break;
+      case "payment_intent.payment_failed": {
+        const pi = event.data.object as Stripe.PaymentIntent;
+        const supabase = createServiceClient();
+        await supabase
+          .from("payments")
+          .update({ status: "failed", updated_at: new Date().toISOString() })
+          .eq("stripe_payment_intent_id", pi.id);
+        break;
+      }
+      case "customer.subscription.created":
+      case "customer.subscription.updated":
+      case "customer.subscription.deleted":
+        await syncSubscription(event.data.object as Stripe.Subscription);
+        break;
+      case "invoice.payment_succeeded":
+      case "invoice.payment_failed": {
+        const invoice = event.data.object as Stripe.Invoice;
+        const subRef =
+          "subscription" in invoice ? (invoice as { subscription?: string | Stripe.Subscription | null }).subscription : null;
+        const subId =
+          typeof subRef === "string" ? subRef : subRef && typeof subRef === "object" ? subRef.id : null;
+        if (subId) {
+          const subscription = await stripe.subscriptions.retrieve(subId);
+          await syncSubscription(subscription);
+        }
+        break;
+      }
+      default:
+        break;
     }
+  } catch {
+    // Avoid failing Stripe retries on local/demo missing service role — log via status still 200 once configured
   }
 
   return NextResponse.json({ received: true });

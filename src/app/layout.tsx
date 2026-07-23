@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Outfit } from "next/font/google";
 
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
+import { getLocale } from "@/i18n/getDictionary";
 import "./globals.css";
 
 const display = Cormorant_Garamond({
@@ -25,9 +26,13 @@ export const metadata: Metadata = {
     "Exclusive luxury competitions from Rich Reporter Magazine. Premium prizes, limited entries, and a legally compliant free mail-in route.",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  const locale = await getLocale();
+
   return (
-    <html lang="en" className={`${display.variable} ${sans.variable}`}>
+    <html lang={locale} className={`${display.variable} ${sans.variable}`}>
       <body className="min-h-screen antialiased">
         <SiteHeader />
         {children}

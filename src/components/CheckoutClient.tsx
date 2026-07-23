@@ -102,6 +102,12 @@ function PaymentForm({
       <PaymentElement
         options={{
           layout: "tabs",
+          // Collect full billing address; Stripe shows the complete country list (not US-only).
+          fields: {
+            billingDetails: {
+              address: "auto",
+            },
+          },
         }}
       />
       <p className="text-xs leading-relaxed text-[var(--muted)]">

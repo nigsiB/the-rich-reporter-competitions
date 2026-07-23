@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { signUpMemberAction } from "@/app/actions/auth";
+import CountrySelect from "@/components/CountrySelect";
 import { fieldClass, labelClass, primaryBtnClass } from "@/components/formStyles";
 import { useRouter } from "next/navigation";
 
@@ -28,7 +29,7 @@ export default function MembershipForm() {
       city: String(form.get("city") ?? ""),
       state: String(form.get("state") ?? ""),
       postalCode: String(form.get("postalCode") ?? ""),
-      country: String(form.get("country") ?? "US"),
+      country: String(form.get("country") ?? ""),
       dateOfBirth: String(form.get("dateOfBirth") ?? ""),
       marketingOptIn: form.get("marketingOptIn") === "on",
     });
@@ -40,9 +41,15 @@ export default function MembershipForm() {
       return;
     }
 
-    setSuccess(result.message ?? "Membership created.");
-    router.push("/#competitions");
-    router.refresh();
+    const message = result.message ?? "Membership created.";
+    setSuccess(message);
+
+    // Stay on page when user must confirm email so the success message is readable.
+    const needsEmailConfirm = /check your email/i.test(message);
+    if (!needsEmailConfirm) {
+      router.push("/#competitions");
+      router.refresh();
+    }
   };
 
   return (
@@ -157,7 +164,7 @@ export default function MembershipForm() {
           </div>
           <div>
             <label htmlFor="state" className={labelClass}>
-              State
+              State / Province / Region
             </label>
             <input
               id="state"
@@ -165,7 +172,7 @@ export default function MembershipForm() {
               required
               autoComplete="address-level1"
               className={fieldClass}
-              placeholder="e.g. CA"
+              placeholder="State, province, or region"
             />
           </div>
           <div>
@@ -184,10 +191,7 @@ export default function MembershipForm() {
             <label htmlFor="country" className={labelClass}>
               Country
             </label>
-            <select id="country" name="country" defaultValue="US" className={fieldClass}>
-              <option value="US">United States</option>
-              <option value="CA">Canada</option>
-            </select>
+            <CountrySelect id="country" name="country" />
           </div>
         </div>
       </fieldset>

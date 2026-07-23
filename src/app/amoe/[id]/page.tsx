@@ -75,7 +75,10 @@ export default async function AmoeFormPage({ params }: PageProps) {
             "Full legal name",
             "Date of birth (must be 18+)",
             "Street address",
-            "City / State / ZIP",
+            "City",
+            "State / Province / Region",
+            "Postal / ZIP code",
+            "Country",
             "Email address",
             "Telephone",
           ].map((label) => (

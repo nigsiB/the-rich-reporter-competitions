@@ -5,6 +5,17 @@ export function isSupabaseConfigured(): boolean {
     url &&
       key &&
       !url.includes("your-project") &&
-      key !== "your-anon-key",
+      !key.startsWith("your-anon") &&
+      key !== "your-anon-or-publishable-key",
+  );
+}
+
+export function isSupabaseServiceConfigured(): boolean {
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  return Boolean(
+    isSupabaseConfigured() &&
+      key &&
+      !key.startsWith("your-service") &&
+      key !== "your-service-role-jwt",
   );
 }

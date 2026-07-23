@@ -5,8 +5,8 @@
 1. Go to https://supabase.com/dashboard → New project
 2. **Project Settings → API** — copy:
    - Project URL → `NEXT_PUBLIC_SUPABASE_URL`
-   - `anon` `public` key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `service_role` key → `SUPABASE_SERVICE_ROLE_KEY` (server only)
+   - `anon` / `publishable` key → `NEXT_PUBLIC_SUPABASE_ANON_KEY` (JWT `eyJ…` or `sb_publishable_…`)
+   - `service_role` / `secret` key → `SUPABASE_SERVICE_ROLE_KEY` (server only — JWT `eyJ…` or `sb_secret_…`, **not** the Postgres connection string)
 3. **Authentication → Providers → Email** — enable
 4. **Authentication → URL Configuration**
    - Site URL: `https://the-rich-reporter-competitions.vercel.app`

@@ -1,12 +1,13 @@
 import Link from "next/link";
 import AmoeBlock from "@/components/AmoeBlock";
 import CompetitionGrid from "@/components/CompetitionGrid";
-import { competitions } from "@/data/competitions";
+import { getActiveCompetitions } from "@/lib/competitions";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const { competitions } = await getActiveCompetitions();
+
   return (
     <main>
-      {/* Hero — brand first, single composition */}
       <section
         className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden px-6 pb-20 pt-32 md:px-10 md:pb-28"
         aria-labelledby="hero-heading"
@@ -42,10 +43,10 @@ export default function HomePage() {
               View Collection
             </Link>
             <Link
-              href="#amoe"
+              href="/membership"
               className="text-[10px] uppercase tracking-[0.28em] text-[var(--muted)] transition-colors duration-300 hover:text-[var(--champagne)]"
             >
-              Free mail-in entry
+              Become a member
             </Link>
           </div>
         </div>

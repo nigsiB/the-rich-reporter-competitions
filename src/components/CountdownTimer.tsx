@@ -31,12 +31,27 @@ function pad(n: number) {
 }
 
 export default function CountdownTimer({ drawDate }: CountdownTimerProps) {
-  const [remaining, setRemaining] = useState<Remaining>(() => getRemaining(drawDate));
+  const [remaining, setRemaining] = useState<Remaining | null>(null);
 
   useEffect(() => {
+    setRemaining(getRemaining(drawDate));
     const id = window.setInterval(() => setRemaining(getRemaining(drawDate)), 1000);
     return () => window.clearInterval(id);
   }, [drawDate]);
+
+  // Stable SSR/hydration placeholder — live clock starts after mount
+  if (!remaining) {
+    return (
+      <div
+        className="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-[var(--muted)]"
+        aria-hidden="true"
+      >
+        <span className="text-[var(--champagne)]">--d</span>
+        <span className="text-[var(--border-strong)]">·</span>
+        <span>--:--:--</span>
+      </div>
+    );
+  }
 
   if (remaining.expired) {
     return (

@@ -1,37 +1,38 @@
 # The Rich Reporter — Competitions
 
-Luxury competition platform for Rich Reporter Magazine. Built from the outreach Next.js boilerplate.
+Luxury competition platform for Rich Reporter Magazine.
+
+**Live:** https://the-rich-reporter-competitions.vercel.app  
+**Repo:** https://github.com/nigsiB/the-rich-reporter-competitions
 
 ## Stack
 
 - Next.js App Router + Tailwind CSS v4
-- Supabase (PostgreSQL + `reserve_tickets` RPC)
-- Framer Motion (available for page transitions)
-- Stripe Custom Elements (checkout placeholder)
+- Supabase (Auth, PostgreSQL, Realtime, RPC)
+- Stripe Custom Elements checkout
+- Vercel Cron (reservation expiry)
 
-## Getting started
+## Quick start
 
 ```bash
 npm install
 cp .env.example .env.local
-# Fill NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
+# Fill Supabase + Stripe keys — see supabase/SETUP.md
 npm run dev
 ```
 
-## Supabase setup
+## Features
 
-1. Open the Supabase SQL Editor.
-2. Run `supabase/schema.sql`.
-3. Run `supabase/seed.sql`.
+- Membership signup + profile capture (`/membership`)
+- Contact desk (`/contact`) + admin inbox
+- Admin competition CRUD + display order (`/admin`)
+- Ticket reserve → Stripe checkout → mark sold (webhook)
+- Reservation expiry (15 min default, cron every 5 min)
+- Live DB marketplace when Supabase is configured (falls back to local seed)
+- AMOE printable forms (`/amoe`)
+- Official Rules / Privacy / Terms (`/legal/*`)
+- Realtime inventory bars (Supabase Realtime on `tickets`)
 
-Until Supabase is connected, the UI uses local seed data from `src/data/competitions.ts`.
+## Enable for real
 
-## Key paths
-
-| Path | Purpose |
-|------|---------|
-| `src/app/actions/tickets.ts` | `reserveTicketsAction` server action |
-| `src/components/TicketCheckoutBtn.tsx` | Luxury checkout CTA |
-| `src/data/competitions.ts` | 10 dummy competitions |
-| `supabase/schema.sql` | Tables + concurrency RPC |
-| `supabase/seed.sql` | Seed competitions + tickets |
+Follow **`supabase/SETUP.md`** (SQL, env, Stripe webhook, admin promotion).

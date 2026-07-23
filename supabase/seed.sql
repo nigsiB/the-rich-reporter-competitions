@@ -11,6 +11,7 @@ INSERT INTO competitions (
     price_per_entry,
     draw_date,
     image_url,
+    display_order,
     status
 ) VALUES
 (
@@ -21,6 +22,7 @@ INSERT INTO competitions (
     250.00,
     NOW() + INTERVAL '28 days',
     'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=800',
+    1,
     'active'
 ),
 (
@@ -31,6 +33,7 @@ INSERT INTO competitions (
     500.00,
     NOW() + INTERVAL '45 days',
     'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&q=80&w=800',
+    2,
     'active'
 ),
 (
@@ -41,6 +44,7 @@ INSERT INTO competitions (
     175.00,
     NOW() + INTERVAL '21 days',
     'https://images.unsplash.com/photo-1547996160-81dfa63595aa?auto=format&fit=crop&q=80&w=800',
+    3,
     'active'
 ),
 (
@@ -51,6 +55,7 @@ INSERT INTO competitions (
     350.00,
     NOW() + INTERVAL '35 days',
     'https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?auto=format&fit=crop&q=80&w=800',
+    4,
     'active'
 ),
 (
@@ -61,6 +66,7 @@ INSERT INTO competitions (
     400.00,
     NOW() + INTERVAL '40 days',
     'https://images.unsplash.com/photo-1540962351504-03099e0a754b?auto=format&fit=crop&q=80&w=800',
+    5,
     'active'
 ),
 (
@@ -71,6 +77,7 @@ INSERT INTO competitions (
     125.00,
     NOW() + INTERVAL '18 days',
     'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&q=80&w=800',
+    6,
     'active'
 ),
 (
@@ -81,6 +88,7 @@ INSERT INTO competitions (
     300.00,
     NOW() + INTERVAL '50 days',
     'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&q=80&w=800',
+    7,
     'active'
 ),
 (
@@ -91,6 +99,7 @@ INSERT INTO competitions (
     200.00,
     NOW() + INTERVAL '30 days',
     'https://images.unsplash.com/photo-1593032465175-481ac7f401a0?auto=format&fit=crop&q=80&w=800',
+    8,
     'active'
 ),
 (
@@ -101,6 +110,7 @@ INSERT INTO competitions (
     225.00,
     NOW() + INTERVAL '25 days',
     'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800',
+    9,
     'active'
 ),
 (
@@ -111,6 +121,7 @@ INSERT INTO competitions (
     275.00,
     NOW() + INTERVAL '32 days',
     'https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&q=80&w=800',
+    10,
     'active'
 );
 

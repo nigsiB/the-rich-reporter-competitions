@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Competition } from "@/data/competitions";
-import { availabilityPercent } from "@/data/competitions";
 import CountdownTimer from "@/components/CountdownTimer";
+import InventoryBar from "@/components/InventoryBar";
 
 type CompetitionCardProps = {
   competition: Competition;
@@ -10,7 +10,6 @@ type CompetitionCardProps = {
 };
 
 export default function CompetitionCard({ competition, index }: CompetitionCardProps) {
-  const availablePct = availabilityPercent(competition);
   const price = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -18,10 +17,7 @@ export default function CompetitionCard({ competition, index }: CompetitionCardP
   }).format(competition.pricePerEntry);
 
   return (
-    <article
-      className="group flex flex-col"
-      style={{ animationDelay: `${index * 60}ms` }}
-    >
+    <article className="group flex flex-col" style={{ animationDelay: `${index * 60}ms` }}>
       <Link
         href={`/competitions/${competition.id}`}
         className="relative block aspect-[4/5] overflow-hidden bg-[var(--bg-elevated)]"
@@ -57,7 +53,9 @@ export default function CompetitionCard({ competition, index }: CompetitionCardP
           </h3>
           <p className="shrink-0 text-[11px] uppercase tracking-[0.18em] text-[var(--muted)]">
             {price}
-            <span className="block text-[9px] tracking-[0.14em] text-[var(--muted)]/70">per entry</span>
+            <span className="block text-[9px] tracking-[0.14em] text-[var(--muted)]/70">
+              per entry
+            </span>
           </p>
         </div>
 
@@ -66,25 +64,14 @@ export default function CompetitionCard({ competition, index }: CompetitionCardP
         </p>
 
         <div className="mt-auto space-y-3 pt-2">
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
-              {availablePct}% available
-            </span>
+          <div className="flex justify-end">
             <CountdownTimer drawDate={competition.drawDate} />
           </div>
-          <div
-            className="h-px w-full bg-[var(--border)]"
-            role="progressbar"
-            aria-valuenow={availablePct}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label={`${availablePct} percent of entries still available`}
-          >
-            <div
-              className="h-px bg-[var(--champagne)] transition-all duration-700"
-              style={{ width: `${availablePct}%` }}
-            />
-          </div>
+          <InventoryBar
+            competitionId={competition.id}
+            totalEntries={competition.totalEntries}
+            initialAvailable={competition.entriesRemaining}
+          />
         </div>
       </div>
     </article>

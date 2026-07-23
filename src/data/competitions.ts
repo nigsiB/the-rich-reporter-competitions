@@ -7,6 +7,7 @@ export type Competition = {
   pricePerEntry: number;
   drawDate: string;
   imageUrl: string;
+  displayOrder: number;
   status: "active" | "paused" | "completed";
 };
 
@@ -29,6 +30,7 @@ export const competitions: Competition[] = [
     drawDate: daysFromNow(28),
     imageUrl:
       "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=800",
+    displayOrder: 1,
     status: "active",
   },
   {
@@ -42,6 +44,7 @@ export const competitions: Competition[] = [
     drawDate: daysFromNow(45),
     imageUrl:
       "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&q=80&w=800",
+    displayOrder: 2,
     status: "active",
   },
   {
@@ -55,6 +58,7 @@ export const competitions: Competition[] = [
     drawDate: daysFromNow(21),
     imageUrl:
       "https://images.unsplash.com/photo-1547996160-81dfa63595aa?auto=format&fit=crop&q=80&w=800",
+    displayOrder: 3,
     status: "active",
   },
   {
@@ -68,6 +72,7 @@ export const competitions: Competition[] = [
     drawDate: daysFromNow(35),
     imageUrl:
       "https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?auto=format&fit=crop&q=80&w=800",
+    displayOrder: 4,
     status: "active",
   },
   {
@@ -81,6 +86,7 @@ export const competitions: Competition[] = [
     drawDate: daysFromNow(40),
     imageUrl:
       "https://images.unsplash.com/photo-1540962351504-03099e0a754b?auto=format&fit=crop&q=80&w=800",
+    displayOrder: 5,
     status: "active",
   },
   {
@@ -94,6 +100,7 @@ export const competitions: Competition[] = [
     drawDate: daysFromNow(18),
     imageUrl:
       "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&q=80&w=800",
+    displayOrder: 6,
     status: "active",
   },
   {
@@ -107,6 +114,7 @@ export const competitions: Competition[] = [
     drawDate: daysFromNow(50),
     imageUrl:
       "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&q=80&w=800",
+    displayOrder: 7,
     status: "active",
   },
   {
@@ -120,6 +128,7 @@ export const competitions: Competition[] = [
     drawDate: daysFromNow(30),
     imageUrl:
       "https://images.unsplash.com/photo-1593032465175-481ac7f401a0?auto=format&fit=crop&q=80&w=800",
+    displayOrder: 8,
     status: "active",
   },
   {
@@ -133,6 +142,7 @@ export const competitions: Competition[] = [
     drawDate: daysFromNow(25),
     imageUrl:
       "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800",
+    displayOrder: 9,
     status: "active",
   },
   {
@@ -146,6 +156,7 @@ export const competitions: Competition[] = [
     drawDate: daysFromNow(32),
     imageUrl:
       "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&q=80&w=800",
+    displayOrder: 10,
     status: "active",
   },
 ];

@@ -2,8 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CountdownTimer from "@/components/CountdownTimer";
+import InventoryBar from "@/components/InventoryBar";
 import TicketCheckoutBtn from "@/components/TicketCheckoutBtn";
-import { availabilityPercent, getCompetitionById, competitions } from "@/data/competitions";
+import { competitions } from "@/data/competitions";
+import { getLiveCompetitionById } from "@/lib/competitions";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -15,7 +17,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
-  const competition = getCompetitionById(id);
+  const { competition } = await getLiveCompetitionById(id);
   if (!competition) return { title: "Competition" };
   return {
     title: `${competition.title} — The Rich Reporter`,
@@ -25,10 +27,9 @@ export async function generateMetadata({ params }: PageProps) {
 
 export default async function CompetitionPage({ params }: PageProps) {
   const { id } = await params;
-  const competition = getCompetitionById(id);
+  const { competition } = await getLiveCompetitionById(id);
   if (!competition) notFound();
 
-  const availablePct = availabilityPercent(competition);
   const price = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -70,20 +71,15 @@ export default async function CompetitionPage({ params }: PageProps) {
           <div className="mt-10 space-y-4 border-y border-[var(--border)] py-8">
             <div className="flex items-center justify-between">
               <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
-                {availablePct}% available
+                Live inventory
               </span>
               <CountdownTimer drawDate={competition.drawDate} />
             </div>
-            <div
-              className="h-px w-full bg-[var(--border)]"
-              role="progressbar"
-              aria-valuenow={availablePct}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-label={`${availablePct} percent of entries still available`}
-            >
-              <div className="h-px bg-[var(--champagne)]" style={{ width: `${availablePct}%` }} />
-            </div>
+            <InventoryBar
+              competitionId={competition.id}
+              totalEntries={competition.totalEntries}
+              initialAvailable={competition.entriesRemaining}
+            />
             <p className="text-sm text-[var(--muted)]">
               <span className="text-[var(--fg)]">{price}</span> per entry · five-entry bundle at
               checkout
@@ -100,8 +96,15 @@ export default async function CompetitionPage({ params }: PageProps) {
 
           <p className="mt-6 text-xs leading-relaxed text-[var(--muted)]">
             No purchase necessary. See{" "}
-            <Link href="/#amoe" className="text-[var(--champagne)] underline-offset-4 hover:underline">
+            <Link href="/amoe" className="text-[var(--champagne)] underline-offset-4 hover:underline">
               Alternative Method of Entry
+            </Link>{" "}
+            and{" "}
+            <Link
+              href="/legal/official-rules"
+              className="text-[var(--champagne)] underline-offset-4 hover:underline"
+            >
+              Official Rules
             </Link>
             .
           </p>

@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS contact_messages (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 5. Auto-create profile on signup
+-- 5. Auto-create profile on signup (full fields from raw_user_meta_data)
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -78,13 +78,54 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-    INSERT INTO public.profiles (id, email, full_name)
+    INSERT INTO public.profiles (
+        id,
+        email,
+        full_name,
+        phone,
+        address_line1,
+        address_line2,
+        city,
+        state,
+        postal_code,
+        country,
+        date_of_birth,
+        marketing_opt_in,
+        updated_at
+    )
     VALUES (
         NEW.id,
         NEW.email,
-        COALESCE(NEW.raw_user_meta_data->>'full_name', '')
+        COALESCE(NEW.raw_user_meta_data->>'full_name', ''),
+        NULLIF(COALESCE(NEW.raw_user_meta_data->>'phone', ''), ''),
+        NULLIF(COALESCE(NEW.raw_user_meta_data->>'address_line1', ''), ''),
+        NULLIF(COALESCE(NEW.raw_user_meta_data->>'address_line2', ''), ''),
+        NULLIF(COALESCE(NEW.raw_user_meta_data->>'city', ''), ''),
+        NULLIF(COALESCE(NEW.raw_user_meta_data->>'state', ''), ''),
+        NULLIF(COALESCE(NEW.raw_user_meta_data->>'postal_code', ''), ''),
+        COALESCE(NULLIF(NEW.raw_user_meta_data->>'country', ''), 'US'),
+        CASE
+            WHEN COALESCE(NEW.raw_user_meta_data->>'date_of_birth', '') ~ '^\d{4}-\d{2}-\d{2}$'
+                THEN (NEW.raw_user_meta_data->>'date_of_birth')::date
+            ELSE NULL
+        END,
+        COALESCE((NEW.raw_user_meta_data->>'marketing_opt_in')::boolean, false),
+        NOW()
     )
-    ON CONFLICT (id) DO NOTHING;
+    ON CONFLICT (id) DO UPDATE SET
+        email = EXCLUDED.email,
+        full_name = COALESCE(NULLIF(EXCLUDED.full_name, ''), profiles.full_name),
+        phone = COALESCE(EXCLUDED.phone, profiles.phone),
+        address_line1 = COALESCE(EXCLUDED.address_line1, profiles.address_line1),
+        address_line2 = COALESCE(EXCLUDED.address_line2, profiles.address_line2),
+        city = COALESCE(EXCLUDED.city, profiles.city),
+        state = COALESCE(EXCLUDED.state, profiles.state),
+        postal_code = COALESCE(EXCLUDED.postal_code, profiles.postal_code),
+        country = COALESCE(EXCLUDED.country, profiles.country),
+        date_of_birth = COALESCE(EXCLUDED.date_of_birth, profiles.date_of_birth),
+        marketing_opt_in = EXCLUDED.marketing_opt_in,
+        updated_at = NOW();
+
     RETURN NEW;
 END;
 $$;
@@ -176,12 +217,15 @@ AS $$
 $$;
 
 -- Profiles: users read/update self; admins read all
+-- Trigger inserts as SECURITY DEFINER (bypasses RLS). Client upsert needs UPDATE WITH CHECK.
 CREATE POLICY "profiles_select_own" ON profiles
     FOR SELECT USING (auth.uid() = id OR public.is_admin());
-CREATE POLICY "profiles_update_own" ON profiles
-    FOR UPDATE USING (auth.uid() = id OR public.is_admin());
 CREATE POLICY "profiles_insert_own" ON profiles
     FOR INSERT WITH CHECK (auth.uid() = id);
+CREATE POLICY "profiles_update_own" ON profiles
+    FOR UPDATE
+    USING (auth.uid() = id OR public.is_admin())
+    WITH CHECK (auth.uid() = id OR public.is_admin());
 
 -- Competitions: public read active; admins full access
 CREATE POLICY "competitions_public_read" ON competitions

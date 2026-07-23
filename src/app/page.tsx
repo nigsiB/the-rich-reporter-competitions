@@ -37,11 +37,11 @@ export default async function HomePage() {
             id="hero-heading"
             className="mt-5 max-w-3xl font-[family-name:var(--font-display)] text-5xl leading-[1.05] tracking-wide text-[var(--fg)] md:text-7xl lg:text-8xl"
           >
-            The Rich Reporter
+            Quietly richer
           </h1>
           <p className="mt-6 max-w-md text-sm leading-relaxed text-[var(--muted)] md:text-base">
             Private competitions for readers who expect more — flagship tech, weekend escapes, and
-            considered experiences drawn with discretion.
+            experiences drawn with discretion.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-5">
             <Link

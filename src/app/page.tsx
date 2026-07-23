@@ -13,11 +13,19 @@ export default async function HomePage() {
         aria-labelledby="hero-heading"
       >
         <div
-          className="pointer-events-none absolute inset-0 bg-[url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=1600')] bg-cover bg-center"
+          className="pointer-events-none absolute inset-0 bg-[url('https://images.unsplash.com/photo-1697636979792-fb057f6cbe8d?auto=format&fit=crop&q=80&w=1600')] bg-cover bg-center"
           aria-hidden="true"
         />
         <div
-          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--bg-deep)] via-[var(--bg-deep)]/85 to-[var(--bg-deep)]/40"
+          className="pointer-events-none absolute inset-0 bg-[var(--bg-deep)]/45"
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--bg-deep)] via-[var(--bg-deep)]/88 to-[var(--bg-deep)]/50"
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[var(--bg-deep)]/70 via-transparent to-[var(--bg-deep)]/30"
           aria-hidden="true"
         />
 
@@ -32,8 +40,8 @@ export default async function HomePage() {
             The Rich Reporter
           </h1>
           <p className="mt-6 max-w-md text-sm leading-relaxed text-[var(--muted)] md:text-base">
-            Private competitions for readers who expect more — automobiles, estates, and experiences
-            drawn with discretion.
+            Private competitions for readers who expect more — flagship tech, weekend escapes, and
+            considered experiences drawn with discretion.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-5">
             <Link

@@ -113,10 +113,10 @@ export default function CompetitionForm({ mode, competitionId, initial }: Compet
             id="pricePerEntry"
             name="pricePerEntry"
             type="number"
-            min={1}
+            min={0.01}
             step="0.01"
             required
-            defaultValue={initial?.pricePerEntry ?? 250}
+            defaultValue={initial?.pricePerEntry ?? 0.25}
             className={fieldClass}
           />
         </div>

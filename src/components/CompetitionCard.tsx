@@ -13,7 +13,8 @@ export default function CompetitionCard({ competition, index }: CompetitionCardP
   const price = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(competition.pricePerEntry);
 
   return (
@@ -27,11 +28,11 @@ export default function CompetitionCard({ competition, index }: CompetitionCardP
           alt={competition.title}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+          className="object-cover brightness-[0.88] contrast-[1.08] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
           priority={index < 2}
         />
         <div
-          className="absolute inset-0 bg-gradient-to-t from-[var(--bg-deep)] via-transparent to-transparent opacity-80"
+          className="absolute inset-0 bg-gradient-to-t from-[var(--bg-deep)] via-[var(--bg-deep)]/25 to-[var(--bg-deep)]/15 opacity-90"
           aria-hidden="true"
         />
         <div className="absolute bottom-0 left-0 right-0 p-6">

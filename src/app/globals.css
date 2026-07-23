@@ -48,3 +48,42 @@ body::before {
     radial-gradient(ellipse 60% 40% at 100% 100%, rgba(196, 165, 116, 0.04), transparent 50%),
     var(--bg-deep);
 }
+
+/* High-end ticket quantity slider */
+.ticket-slider {
+  height: 2px;
+  border-radius: 0;
+  outline: none;
+}
+
+.ticket-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--champagne);
+  border: 2px solid var(--bg-deep);
+  box-shadow: 0 0 0 1px rgba(196, 165, 116, 0.35);
+  cursor: pointer;
+  transition: transform 0.25s ease;
+}
+
+.ticket-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.ticket-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--champagne);
+  border: 2px solid var(--bg-deep);
+  box-shadow: 0 0 0 1px rgba(196, 165, 116, 0.35);
+  cursor: pointer;
+}
+
+.ticket-slider::-moz-range-track {
+  height: 2px;
+  background: transparent;
+}

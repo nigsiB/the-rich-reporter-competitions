@@ -33,7 +33,8 @@ export default async function CompetitionPage({ params }: PageProps) {
   const price = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(competition.pricePerEntry);
 
   return (
@@ -46,7 +47,11 @@ export default async function CompetitionPage({ params }: PageProps) {
             fill
             priority
             sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover"
+            className="object-cover brightness-[0.88] contrast-[1.08]"
+          />
+          <div
+            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--bg-deep)]/55 via-transparent to-[var(--bg-deep)]/20"
+            aria-hidden="true"
           />
         </div>
 
@@ -81,8 +86,7 @@ export default async function CompetitionPage({ params }: PageProps) {
               initialAvailable={competition.entriesRemaining}
             />
             <p className="text-sm text-[var(--muted)]">
-              <span className="text-[var(--fg)]">{price}</span> per entry · five-entry bundle at
-              checkout
+              <span className="text-[var(--fg)]">{price}</span> per entry · choose 1–1,000 below
             </p>
           </div>
 
@@ -90,7 +94,6 @@ export default async function CompetitionPage({ params }: PageProps) {
             <TicketCheckoutBtn
               competitionId={competition.id}
               pricePerEntry={competition.pricePerEntry}
-              quantity={5}
             />
           </div>
 

@@ -7,14 +7,15 @@ import { useRouter } from "next/navigation";
 type TicketCheckoutBtnProps = {
   competitionId: string;
   pricePerEntry: number;
-  quantity?: number;
+  maxQuantity?: number;
 };
 
 export default function TicketCheckoutBtn({
   competitionId,
   pricePerEntry,
-  quantity = 5,
+  maxQuantity = 1000,
 }: TicketCheckoutBtnProps) {
+  const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -23,8 +24,16 @@ export default function TicketCheckoutBtn({
   const formatted = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(total);
+
+  const unitFormatted = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(pricePerEntry);
 
   const handlePurchase = async () => {
     setLoading(true);
@@ -42,8 +51,62 @@ export default function TicketCheckoutBtn({
     router.push(`/checkout?session=${ticketIds.join(",")}`);
   };
 
+  const progress = ((quantity - 1) / (maxQuantity - 1)) * 100;
+
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-8">
+      <div className="space-y-5">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--muted)]">
+              Entries
+            </p>
+            <p className="mt-2 font-[family-name:var(--font-display)] text-3xl tracking-wide text-[var(--fg)]">
+              {quantity.toLocaleString("en-US")}
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--muted)]">
+              Total
+            </p>
+            <p className="mt-2 text-lg tracking-wide text-[var(--champagne)]">{formatted}</p>
+            <p className="mt-1 text-[10px] tracking-[0.18em] text-[var(--muted)]/70">
+              {unitFormatted} each
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <label htmlFor="ticket-quantity" className="sr-only">
+            Number of entries
+          </label>
+          <input
+            id="ticket-quantity"
+            type="range"
+            min={1}
+            max={maxQuantity}
+            step={1}
+            value={quantity}
+            onChange={(e) => setQuantity(Number(e.target.value))}
+            className="ticket-slider w-full cursor-pointer appearance-none bg-transparent"
+            style={{
+              background: `linear-gradient(to right, var(--champagne) 0%, var(--champagne) ${progress}%, rgba(212, 175, 120, 0.18) ${progress}%, rgba(212, 175, 120, 0.18) 100%)`,
+              height: "2px",
+              borderRadius: 0,
+            }}
+            aria-valuemin={1}
+            aria-valuemax={maxQuantity}
+            aria-valuenow={quantity}
+            aria-label="Number of entries"
+          />
+          <div className="flex justify-between text-[10px] uppercase tracking-[0.28em] text-[var(--muted)]/60">
+            <span>1</span>
+            <span>500</span>
+            <span>1,000</span>
+          </div>
+        </div>
+      </div>
+
       <button
         type="button"
         onClick={handlePurchase}

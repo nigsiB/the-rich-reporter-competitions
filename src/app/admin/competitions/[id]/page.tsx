@@ -1,5 +1,7 @@
 import CompetitionForm from "@/components/admin/CompetitionForm";
 import { getAdminCompetition } from "@/app/actions/admin";
+import { resolveAdminTranslations } from "@/i18n/competitions";
+import type { CompetitionTranslations } from "@/lib/types";
 import { notFound } from "next/navigation";
 
 type PageProps = {
@@ -10,6 +12,12 @@ export default async function EditCompetitionPage({ params }: PageProps) {
   const { id } = await params;
   const competition = await getAdminCompetition(id);
   if (!competition) notFound();
+
+  const translations = resolveAdminTranslations(
+    competition.id,
+    competition.title,
+    (competition.translations ?? null) as CompetitionTranslations | null,
+  );
 
   return (
     <div>
@@ -23,6 +31,7 @@ export default async function EditCompetitionPage({ params }: PageProps) {
           initial={{
             title: competition.title,
             prizeDescription: competition.prize_description,
+            translations,
             totalEntries: competition.total_entries,
             pricePerEntry: Number(competition.price_per_entry),
             cashAlternative: Number(competition.cash_alternative ?? 0),

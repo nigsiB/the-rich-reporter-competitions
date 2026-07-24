@@ -39,9 +39,21 @@ export type ContactInput = {
   message: string;
 };
 
+/** Non-English locale copy stored on competitions.translations JSONB. */
+export type CompetitionLocaleCopy = {
+  title: string;
+  prize_description: string;
+};
+
+export type CompetitionTranslations = Partial<
+  Record<"es" | "fr" | "de" | "pt" | "it", CompetitionLocaleCopy>
+>;
+
 export type CompetitionAdminInput = {
   title: string;
   prizeDescription: string;
+  /** Manual translations for ES/FR/DE/PT/IT (English uses title/prizeDescription). */
+  translations?: CompetitionTranslations;
   totalEntries: number;
   pricePerEntry: number;
   cashAlternative: number;

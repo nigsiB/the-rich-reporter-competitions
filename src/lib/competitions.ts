@@ -1,12 +1,14 @@
 import type { Competition } from "@/data/competitions";
 import { competitions as localCompetitions } from "@/data/competitions";
 import { isSupabaseConfigured } from "@/lib/env";
+import type { CompetitionTranslations } from "@/lib/types";
 import { createClient } from "@/utils/supabase/server";
 
 type DbCompetition = {
   id: string;
   title: string;
   prize_description: string;
+  translations?: CompetitionTranslations | null;
   total_entries: number;
   price_per_entry: number | string;
   cash_alternative?: number | string | null;
@@ -23,6 +25,7 @@ function mapCompetition(row: DbCompetition, entriesRemaining: number): Competiti
     id: row.id,
     title: row.title,
     prizeDescription: row.prize_description,
+    translations: row.translations ?? null,
     totalEntries: row.total_entries,
     entriesRemaining,
     pricePerEntry: Number(row.price_per_entry),

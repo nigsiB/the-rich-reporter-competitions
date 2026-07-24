@@ -1,10 +1,14 @@
 import type { Competition } from "@/data/competitions";
 import type { Locale } from "@/i18n/dictionaries";
+import type { CompetitionLocaleCopy, CompetitionTranslations } from "@/lib/types";
 
 type CompetitionCopy = {
   title: string;
   prizeDescription: string;
 };
+
+const TRANSLATION_LOCALES = ["es", "fr", "de", "pt", "it"] as const;
+type TranslationLocale = (typeof TRANSLATION_LOCALES)[number];
 
 /** Canonical English titles/descriptions stay in the DB; UI copy is localized here by competition id. */
 const COMPETITION_I18N: Record<string, Record<Locale, CompetitionCopy>> = {
@@ -170,29 +174,86 @@ const COMPETITION_I18N: Record<string, Record<Locale, CompetitionCopy>> = {
   },
 };
 
+function staticMapForCompetition(
+  competition: Pick<Competition, "id" | "title">,
+): Record<Locale, CompetitionCopy> | undefined {
+  return (
+    COMPETITION_I18N[competition.id] ??
+    Object.values(COMPETITION_I18N).find((locales) => locales.en.title === competition.title)
+  );
+}
+
+/**
+ * Resolve stored JSONB translations for admin form prefill.
+ * Prefers competitions.translations; falls back to the static seed map for older rows.
+ */
+export function resolveAdminTranslations(
+  competitionId: string,
+  englishTitle: string,
+  stored: CompetitionTranslations | null | undefined,
+): CompetitionTranslations {
+  const fromDb: CompetitionTranslations = {};
+  for (const locale of TRANSLATION_LOCALES) {
+    const entry = stored?.[locale];
+    if (entry?.title?.trim() || entry?.prize_description?.trim()) {
+      fromDb[locale] = {
+        title: entry?.title?.trim() ?? "",
+        prize_description: entry?.prize_description?.trim() ?? "",
+      };
+    }
+  }
+  if (Object.keys(fromDb).length > 0) return fromDb;
+
+  const staticMap = staticMapForCompetition({ id: competitionId, title: englishTitle });
+  if (!staticMap) return {};
+
+  const fromStatic: CompetitionTranslations = {};
+  for (const locale of TRANSLATION_LOCALES) {
+    const copy = staticMap[locale];
+    if (!copy) continue;
+    fromStatic[locale] = {
+      title: copy.title,
+      prize_description: copy.prizeDescription,
+    };
+  }
+  return fromStatic;
+}
+
+function copyFromStored(
+  stored: CompetitionLocaleCopy | undefined,
+): CompetitionCopy | null {
+  if (!stored) return null;
+  const title = stored.title?.trim() ?? "";
+  const prizeDescription = stored.prize_description?.trim() ?? "";
+  if (!title && !prizeDescription) return null;
+  return { title, prizeDescription };
+}
+
 /**
  * Overlay translated title/description for the active locale.
- * Falls back to the competition's DB (English) fields when no mapping exists.
- * Matches by id first, then by canonical English title (for non-seed ids).
+ * Preference: translations JSONB → English primary fields → static i18n map (legacy seed rows).
  */
 export function localizeCompetition(competition: Competition, locale: Locale): Competition {
-  const byId = COMPETITION_I18N[competition.id]?.[locale];
-  if (byId) {
+  if (locale === "en") return competition;
+
+  const fromDb = copyFromStored(
+    competition.translations?.[locale as TranslationLocale],
+  );
+  if (fromDb) {
     return {
       ...competition,
-      title: byId.title,
-      prizeDescription: byId.prizeDescription,
+      title: fromDb.title || competition.title,
+      prizeDescription: fromDb.prizeDescription || competition.prizeDescription,
     };
   }
 
-  const byTitle = Object.values(COMPETITION_I18N).find(
-    (locales) => locales.en.title === competition.title,
-  )?.[locale];
-  if (byTitle) {
+  const staticMap = staticMapForCompetition(competition);
+  const byStatic = staticMap?.[locale];
+  if (byStatic) {
     return {
       ...competition,
-      title: byTitle.title,
-      prizeDescription: byTitle.prizeDescription,
+      title: byStatic.title,
+      prizeDescription: byStatic.prizeDescription,
     };
   }
 

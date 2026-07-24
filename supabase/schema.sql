@@ -38,6 +38,8 @@ CREATE TABLE IF NOT EXISTS competitions (
     image_url TEXT,
     display_order INT NOT NULL DEFAULT 0,
     status TEXT DEFAULT 'active' CHECK (status IN ('active', 'paused', 'completed')),
+    -- Per-locale title + prize_description for es/fr/de/pt/it (English uses primary columns)
+    translations JSONB NOT NULL DEFAULT '{}'::jsonb,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

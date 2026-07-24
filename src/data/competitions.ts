@@ -1,7 +1,11 @@
+import type { CompetitionTranslations } from "@/lib/types";
+
 export type Competition = {
   id: string;
   title: string;
   prizeDescription: string;
+  /** Manual per-locale copy from competitions.translations (es/fr/de/pt/it). */
+  translations?: CompetitionTranslations | null;
   totalEntries: number;
   entriesRemaining: number;
   pricePerEntry: number;

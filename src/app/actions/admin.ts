@@ -2,9 +2,31 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
-import type { ActionResult, CompetitionAdminInput } from "@/lib/types";
+import type {
+  ActionResult,
+  CompetitionAdminInput,
+  CompetitionLocaleCopy,
+  CompetitionTranslations,
+} from "@/lib/types";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+
+const TRANSLATION_LOCALES = ["es", "fr", "de", "pt", "it"] as const;
+
+function normalizeTranslations(
+  input: CompetitionTranslations | undefined,
+): CompetitionTranslations {
+  const out: CompetitionTranslations = {};
+  for (const locale of TRANSLATION_LOCALES) {
+    const entry = input?.[locale];
+    const title = entry?.title?.trim() ?? "";
+    const prize_description = entry?.prize_description?.trim() ?? "";
+    if (!title && !prize_description) continue;
+    const cleaned: CompetitionLocaleCopy = { title, prize_description };
+    out[locale] = cleaned;
+  }
+  return out;
+}
 
 async function requireAdmin() {
   if (!isSupabaseConfigured()) {
@@ -89,6 +111,7 @@ export async function createCompetitionAction(
     .insert({
       title: input.title.trim(),
       prize_description: input.prizeDescription.trim(),
+      translations: normalizeTranslations(input.translations),
       total_entries: input.totalEntries,
       price_per_entry: input.pricePerEntry,
       cash_alternative: input.cashAlternative,
@@ -130,6 +153,7 @@ export async function updateCompetitionAction(
     .update({
       title: input.title.trim(),
       prize_description: input.prizeDescription.trim(),
+      translations: normalizeTranslations(input.translations),
       total_entries: input.totalEntries,
       price_per_entry: input.pricePerEntry,
       cash_alternative: input.cashAlternative,

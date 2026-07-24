@@ -38,15 +38,15 @@ export default function FloatingNavShell({
   }, []);
 
   return (
-    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 px-3 pt-3 md:px-5 md:pt-4">
+    <header className="fixed inset-x-0 top-0 z-50">
       <div
-        className={`pointer-events-auto mx-auto max-w-7xl border border-[var(--border)] backdrop-blur-xl transition-[background-color,box-shadow,border-color] duration-500 ${
+        className={`backdrop-blur-xl transition-[background-color,box-shadow] duration-500 ${
           scrolled
-            ? "border-[var(--border-strong)] bg-[var(--bg-deep)]/88 shadow-[0_12px_40px_rgba(0,0,0,0.35)]"
-            : "bg-[var(--bg-deep)]/55 shadow-[0_8px_28px_rgba(0,0,0,0.2)]"
+            ? "bg-[var(--bg-deep)]/90 shadow-[0_8px_28px_rgba(0,0,0,0.28)]"
+            : "bg-[var(--bg-deep)]/60"
         }`}
       >
-        <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-5 md:gap-6 md:px-6 md:py-3.5">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-3.5 md:gap-6 md:px-10 md:py-4">
           <div className="min-w-0 shrink-0">{logo}</div>
 
           <nav aria-label="Primary" className="hidden items-center gap-7 lg:flex xl:gap-8">
@@ -94,7 +94,7 @@ export default function FloatingNavShell({
           <div className="min-h-0">
             <nav
               aria-label="Primary"
-              className="flex flex-col gap-1 px-4 py-4 sm:px-5"
+              className="mx-auto flex max-w-7xl flex-col gap-1 px-6 py-4 md:px-10"
               onClick={() => setMenuOpen(false)}
             >
               {mobileNav}

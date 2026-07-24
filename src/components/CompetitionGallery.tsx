@@ -73,10 +73,10 @@ export default function CompetitionGallery({
           fill
           priority
           sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover brightness-[0.72] contrast-[1.12] saturate-[0.85] transition-transform duration-700 group-hover:scale-[1.02]"
+          className="object-cover transition-[transform,filter] duration-700 group-hover:scale-[1.02] group-hover:brightness-[1.04]"
         />
         <div
-          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--bg-deep)]/55 via-transparent to-[var(--bg-deep)]/20"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--bg-deep)]/55 via-transparent to-transparent"
           aria-hidden="true"
         />
         {images.length > 1 ? (
@@ -106,7 +106,7 @@ export default function CompetitionGallery({
                   alt=""
                   fill
                   sizes="120px"
-                  className="object-cover brightness-[0.78] contrast-[1.08] saturate-[0.88]"
+                  className="object-cover"
                 />
               </button>
             </li>

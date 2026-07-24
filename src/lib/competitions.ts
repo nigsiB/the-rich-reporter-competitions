@@ -4,6 +4,23 @@ import { isSupabaseConfigured } from "@/lib/env";
 import type { CompetitionTranslations } from "@/lib/types";
 import { createClient } from "@/utils/supabase/server";
 
+/** Drop Unsplash sat/bri crush params so product photos stay vibrant. */
+function normalizeImageUrl(url: string | null | undefined): string {
+  if (!url) return "";
+  try {
+    const u = new URL(url);
+    u.searchParams.delete("sat");
+    u.searchParams.delete("bri");
+    return u.toString();
+  } catch {
+    return url
+      .replace(/[&?]sat=-?\d+/g, "")
+      .replace(/[&?]bri=-?\d+/g, "")
+      .replace(/\?&/, "?")
+      .replace(/\?$/, "");
+  }
+}
+
 type DbCompetition = {
   id: string;
   title: string;
@@ -24,7 +41,9 @@ type DbCompetition = {
 
 function mapCompetition(row: DbCompetition, entriesRemaining: number): Competition {
   const gallery = Array.isArray(row.gallery_urls)
-    ? row.gallery_urls.filter((u): u is string => typeof u === "string" && u.trim().length > 0)
+    ? row.gallery_urls
+        .filter((u): u is string => typeof u === "string" && u.trim().length > 0)
+        .map(normalizeImageUrl)
     : [];
   return {
     id: row.id,
@@ -39,7 +58,7 @@ function mapCompetition(row: DbCompetition, entriesRemaining: number): Competiti
     cashAlternative: Number(row.cash_alternative ?? 0),
     retailValue: Number(row.retail_value ?? row.cash_alternative ?? 0),
     drawDate: row.draw_date ?? new Date().toISOString(),
-    imageUrl: row.image_url ?? "",
+    imageUrl: normalizeImageUrl(row.image_url),
     galleryUrls: gallery,
     displayOrder: row.display_order ?? 0,
     status: row.status,

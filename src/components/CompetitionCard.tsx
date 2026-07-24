@@ -35,11 +35,11 @@ export default function CompetitionCard({
           alt={competition.title}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover brightness-[0.72] contrast-[1.12] saturate-[0.85] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+          className="object-cover transition-[transform,filter] duration-700 ease-out group-hover:scale-[1.03] group-hover:brightness-[1.04]"
           priority={index < 2}
         />
         <div
-          className="absolute inset-0 bg-gradient-to-t from-[var(--bg-deep)] via-[var(--bg-deep)]/25 to-[var(--bg-deep)]/15 opacity-90"
+          className="absolute inset-0 bg-gradient-to-t from-[var(--bg-deep)]/75 via-[var(--bg-deep)]/15 to-transparent"
           aria-hidden="true"
         />
         <div className="absolute bottom-0 left-0 right-0 p-6">

@@ -45,7 +45,7 @@ export const competitions: Competition[] = [
     retailValue: 1500,
     drawDate: daysFromNow(30),
     imageUrl:
-      "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?auto=format&fit=crop&q=85&w=1200&sat=-25&bri=-15",
+      "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?auto=format&fit=crop&q=85&w=1200",
     displayOrder: 1,
     status: "active",
     isMonthly: true,
@@ -62,7 +62,7 @@ export const competitions: Competition[] = [
     retailValue: 1000,
     drawDate: daysFromNow(28),
     imageUrl:
-      "https://images.unsplash.com/photo-1716782494065-e9268365ef9f?auto=format&fit=crop&q=85&w=1200&sat=-20&bri=-15",
+      "https://images.unsplash.com/photo-1716782494065-e9268365ef9f?auto=format&fit=crop&q=85&w=1200",
     displayOrder: 2,
     status: "active",
   },
@@ -78,9 +78,9 @@ export const competitions: Competition[] = [
     retailValue: 1200,
     drawDate: daysFromNow(35),
     imageUrl:
-      "https://images.unsplash.com/photo-1762512949121-c1fc05b36e1a?auto=format&fit=crop&q=85&w=1200&sat=-30&bri=-20",
+      "https://images.unsplash.com/photo-1762512949121-c1fc05b36e1a?auto=format&fit=crop&q=85&w=1200",
     galleryUrls: [
-      "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&q=85&w=1200&sat=-35&bri=-25",
+      "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&q=85&w=1200",
     ],
     displayOrder: 3,
     status: "active",
@@ -97,7 +97,7 @@ export const competitions: Competition[] = [
     retailValue: 849,
     drawDate: daysFromNow(32),
     imageUrl:
-      "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&q=85&w=1200&sat=-30&bri=-20",
+      "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&q=85&w=1200",
     displayOrder: 4,
     status: "active",
   },
@@ -113,7 +113,7 @@ export const competitions: Competition[] = [
     retailValue: 1299,
     drawDate: daysFromNow(40),
     imageUrl:
-      "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=85&w=1200&sat=-40&bri=-25",
+      "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=85&w=1200",
     displayOrder: 5,
     status: "active",
   },

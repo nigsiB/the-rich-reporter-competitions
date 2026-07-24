@@ -9,7 +9,7 @@ export default async function SiteFooter() {
     <footer className="border-t border-[var(--border)] bg-[var(--bg-deep)]">
       <div className="mx-auto flex max-w-7xl flex-col gap-10 px-6 py-14 md:flex-row md:items-end md:justify-between md:px-10">
         <div>
-          <BrandLogo showCompetitionsLabel={false} />
+          <BrandLogo />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-[var(--muted)]">
             {dict.footerBlurb}
           </p>

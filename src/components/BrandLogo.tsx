@@ -29,7 +29,7 @@ export default function BrandLogo({
         className="h-7 w-auto md:h-8"
       />
       {showCompetitionsLabel ? (
-        <span className="text-[9px] uppercase tracking-[0.35em] text-[var(--muted)] transition-colors group-hover:text-[var(--champagne)]">
+        <span className="pl-[7%] text-[9px] uppercase tracking-[0.35em] text-[var(--muted)] transition-colors group-hover:text-[var(--champagne)]">
           Competitions
         </span>
       ) : null}

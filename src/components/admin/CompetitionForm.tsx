@@ -5,6 +5,7 @@ import {
   createCompetitionAction,
   updateCompetitionAction,
 } from "@/app/actions/admin";
+import ImageUploadField from "@/components/admin/ImageUploadField";
 import { fieldClass, labelClass, primaryBtnClass, secondaryBtnClass } from "@/components/formStyles";
 import type { CompetitionAdminInput } from "@/lib/types";
 import { useRouter } from "next/navigation";
@@ -27,6 +28,13 @@ export default function CompetitionForm({ mode, competitionId, initial }: Compet
     setError("");
     const form = new FormData(e.currentTarget);
 
+    const imageUrl = String(form.get("imageUrl") ?? "").trim();
+    if (!imageUrl) {
+      setLoading(false);
+      setError("Please upload an image or paste an image URL.");
+      return;
+    }
+
     const payload: CompetitionAdminInput = {
       title: String(form.get("title") ?? ""),
       prizeDescription: String(form.get("prizeDescription") ?? ""),
@@ -36,7 +44,7 @@ export default function CompetitionForm({ mode, competitionId, initial }: Compet
       retailValue: Number(form.get("retailValue") ?? 0),
       isMonthly: form.get("isMonthly") === "on",
       drawDate: String(form.get("drawDate") ?? ""),
-      imageUrl: String(form.get("imageUrl") ?? ""),
+      imageUrl,
       displayOrder: Number(form.get("displayOrder") ?? 0),
       status: String(form.get("status") ?? "active") as CompetitionAdminInput["status"],
       generateTickets: form.get("generateTickets") === "on",
@@ -196,20 +204,7 @@ export default function CompetitionForm({ mode, competitionId, initial }: Compet
             <option value="completed">Completed</option>
           </select>
         </div>
-        <div>
-          <label htmlFor="imageUrl" className={labelClass}>
-            Image URL
-          </label>
-          <input
-            id="imageUrl"
-            name="imageUrl"
-            type="url"
-            required
-            defaultValue={initial?.imageUrl}
-            className={fieldClass}
-            placeholder="https://images.unsplash.com/..."
-          />
-        </div>
+        <ImageUploadField initialUrl={initial?.imageUrl ?? ""} required />
       </div>
 
       <label className="flex items-start gap-3 text-sm text-[var(--muted)]">

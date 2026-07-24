@@ -28,6 +28,56 @@ async function requireAdmin() {
   return { error: null, supabase, userId: user.id };
 }
 
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/jpg"]);
+
+function extensionForMime(mime: string): string {
+  if (mime === "image/png") return "png";
+  if (mime === "image/webp") return "webp";
+  return "jpg";
+}
+
+export async function uploadCompetitionImageAction(
+  formData: FormData,
+): Promise<ActionResult<{ publicUrl: string; path: string }>> {
+  const { error, supabase } = await requireAdmin();
+  if (error || !supabase) return { success: false, error };
+
+  const file = formData.get("file");
+  if (!(file instanceof File)) {
+    return { success: false, error: "No image file provided." };
+  }
+
+  if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+    return { success: false, error: "Please choose a JPG, PNG, or WebP image." };
+  }
+  if (file.size > MAX_IMAGE_BYTES) {
+    return { success: false, error: "Image must be 5MB or smaller." };
+  }
+
+  const ext = extensionForMime(file.type);
+  const path = `${crypto.randomUUID()}.${ext}`;
+  const bytes = new Uint8Array(await file.arrayBuffer());
+
+  const { error: uploadError } = await supabase.storage
+    .from("competition-images")
+    .upload(path, bytes, {
+      contentType: file.type,
+      upsert: false,
+      cacheControl: "3600",
+    });
+
+  if (uploadError) {
+    return { success: false, error: uploadError.message };
+  }
+
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from("competition-images").getPublicUrl(path);
+
+  return { success: true, data: { publicUrl, path } };
+}
+
 export async function createCompetitionAction(
   input: CompetitionAdminInput,
 ): Promise<ActionResult<{ id: string }>> {

@@ -37,7 +37,7 @@ export const competitions: Competition[] = [
     retailValue: 1500,
     drawDate: daysFromNow(30),
     imageUrl:
-      "https://images.unsplash.com/photo-1504711434719-bc93ca84b44c?auto=format&fit=crop&q=85&w=1200&sat=-30&bri=-15",
+      "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?auto=format&fit=crop&q=85&w=1200&sat=-25&bri=-15",
     displayOrder: 1,
     status: "active",
     isMonthly: true,
@@ -54,7 +54,7 @@ export const competitions: Competition[] = [
     retailValue: 1000,
     drawDate: daysFromNow(28),
     imageUrl:
-      "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&q=85&w=1200&sat=-40&bri=-20",
+      "https://images.unsplash.com/photo-1716782494065-e9268365ef9f?auto=format&fit=crop&q=85&w=1200&sat=-20&bri=-15",
     displayOrder: 2,
     status: "active",
   },

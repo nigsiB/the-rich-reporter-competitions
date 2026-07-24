@@ -11,7 +11,7 @@ export default async function HomePage() {
   return (
     <main>
       <section
-        className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden px-6 pb-20 pt-32 md:px-10 md:pb-28"
+        className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden px-6 pb-20 pt-36 md:px-10 md:pb-28"
         aria-labelledby="hero-heading"
       >
         <div
@@ -64,7 +64,7 @@ export default async function HomePage() {
       <div className="mx-auto max-w-7xl space-y-28 px-6 py-24 md:px-10 md:py-32">
         <CompetitionGrid competitions={competitions} dict={dict} locale={locale} />
 
-        <section id="how-it-works" className="scroll-mt-24" aria-labelledby="membership-heading">
+        <section id="how-it-works" className="scroll-mt-28" aria-labelledby="membership-heading">
           <div className="grid gap-12 md:grid-cols-2 md:gap-20">
             <div>
               <p className="text-[10px] uppercase tracking-[0.35em] text-[var(--champagne)]">

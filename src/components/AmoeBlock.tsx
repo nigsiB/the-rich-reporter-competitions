@@ -10,7 +10,7 @@ export default async function AmoeBlock() {
   return (
     <section
       id="amoe"
-      className="scroll-mt-24 border border-[var(--border)] bg-[var(--bg-elevated)] px-8 py-12 md:px-14 md:py-16"
+      className="scroll-mt-28 border border-[var(--border)] bg-[var(--bg-elevated)] px-8 py-12 md:px-14 md:py-16"
       aria-labelledby="amoe-heading"
     >
       <p className="text-[10px] uppercase tracking-[0.35em] text-[var(--champagne)]">

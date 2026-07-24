@@ -10,7 +10,7 @@ export default async function CheckoutSuccessPage() {
   const { dict } = await getDictionary();
 
   return (
-    <main className="flex min-h-[80svh] items-center justify-center px-6 pb-24 pt-28">
+    <main className="flex min-h-[80svh] items-center justify-center px-6 pb-24 pt-32">
       <div className="w-full max-w-lg border border-[var(--border)] bg-[var(--bg-elevated)] px-10 py-14 text-center">
         <p className="text-[10px] uppercase tracking-[0.35em] text-[var(--champagne)]">
           {dict.checkoutConfirmed}

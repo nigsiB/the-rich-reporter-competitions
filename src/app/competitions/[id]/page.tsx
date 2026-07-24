@@ -44,7 +44,7 @@ export default async function CompetitionPage({ params }: PageProps) {
   const returnPath = `/competitions/${competition.id}`;
 
   return (
-    <main className="pt-28">
+    <main className="pt-32">
       <div className="mx-auto grid max-w-7xl gap-12 px-6 pb-28 md:grid-cols-2 md:gap-16 md:px-10 lg:gap-24">
         <div className="relative aspect-[4/5] overflow-hidden bg-[var(--bg-elevated)]">
           <Image

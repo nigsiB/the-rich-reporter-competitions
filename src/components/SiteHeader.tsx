@@ -1,8 +1,16 @@
 import BrandLogo from "@/components/BrandLogo";
+import FloatingNavShell from "@/components/FloatingNavShell";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { getSessionProfile, signOutAction } from "@/app/actions/auth";
 import { getDictionary } from "@/i18n/getDictionary";
 import Link from "next/link";
+
+const linkClass =
+  "text-[10px] uppercase tracking-[0.28em] text-[var(--muted)] transition-colors duration-300 hover:text-[var(--champagne)]";
+const utilityClass =
+  "text-[10px] uppercase tracking-[0.24em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)]";
+const mobileLinkClass =
+  "block py-2.5 text-[11px] uppercase tracking-[0.28em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)]";
 
 export default async function SiteHeader() {
   const { user, profile } = await getSessionProfile();
@@ -16,68 +24,82 @@ export default async function SiteHeader() {
     { href: "/#amoe", label: dict.navFreeEntry },
   ];
 
+  const desktopNav = (
+    <>
+      {links.map((link) => (
+        <Link key={link.href} href={link.href} className={linkClass}>
+          {link.label}
+        </Link>
+      ))}
+      {isAdmin ? (
+        <Link href="/admin" className={`${linkClass} text-[var(--champagne)] hover:text-[var(--fg)]`}>
+          {dict.navAdmin}
+        </Link>
+      ) : null}
+    </>
+  );
+
+  const mobileNav = (
+    <>
+      {links.map((link) => (
+        <Link key={link.href} href={link.href} className={mobileLinkClass}>
+          {link.label}
+        </Link>
+      ))}
+      {isAdmin ? (
+        <Link
+          href="/admin"
+          className={`${mobileLinkClass} text-[var(--champagne)] hover:text-[var(--fg)]`}
+        >
+          {dict.navAdmin}
+        </Link>
+      ) : null}
+      {user ? (
+        <Link href="/account" className={`${mobileLinkClass} sm:hidden`}>
+          {dict.navAccount}
+        </Link>
+      ) : (
+        <Link href="/login" className={`${mobileLinkClass} sm:hidden`}>
+          {dict.signIn}
+        </Link>
+      )}
+    </>
+  );
+
+  const utilities = (
+    <>
+      {user ? (
+        <>
+          <Link href="/account" className={`${utilityClass} hidden sm:inline`}>
+            {dict.navAccount}
+          </Link>
+          <form action={signOutAction}>
+            <button type="submit" className={utilityClass}>
+              {dict.signOut}
+            </button>
+          </form>
+        </>
+      ) : (
+        <>
+          <Link href="/login" className={`${utilityClass} hidden sm:inline`}>
+            {dict.signIn}
+          </Link>
+          <Link href="/membership" className={utilityClass}>
+            {dict.join}
+          </Link>
+        </>
+      )}
+      <LanguageSwitcher locale={locale} label={dict.language} />
+    </>
+  );
+
   return (
-    <header className="absolute inset-x-0 top-0 z-50">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-6 md:px-10">
-        <BrandLogo priority />
-
-        <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-[10px] uppercase tracking-[0.28em] text-[var(--muted)] transition-colors duration-300 hover:text-[var(--champagne)]"
-            >
-              {link.label}
-            </Link>
-          ))}
-          {isAdmin ? (
-            <Link
-              href="/admin"
-              className="text-[10px] uppercase tracking-[0.28em] text-[var(--champagne)] transition-colors duration-300 hover:text-[var(--fg)]"
-            >
-              {dict.navAdmin}
-            </Link>
-          ) : null}
-        </nav>
-
-        <div className="flex items-center gap-3 sm:gap-4">
-          {user ? (
-            <>
-              <Link
-                href="/account"
-                className="hidden text-[10px] uppercase tracking-[0.24em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)] sm:inline"
-              >
-                {dict.navAccount}
-              </Link>
-              <form action={signOutAction}>
-                <button
-                  type="submit"
-                  className="text-[10px] uppercase tracking-[0.24em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)]"
-                >
-                  {dict.signOut}
-                </button>
-              </form>
-            </>
-          ) : (
-            <>
-              <Link
-                href="/login"
-                className="hidden text-[10px] uppercase tracking-[0.24em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)] sm:inline"
-              >
-                {dict.signIn}
-              </Link>
-              <Link
-                href="/membership"
-                className="text-[10px] uppercase tracking-[0.24em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)]"
-              >
-                {dict.join}
-              </Link>
-            </>
-          )}
-          <LanguageSwitcher locale={locale} label={dict.language} />
-        </div>
-      </div>
-    </header>
+    <FloatingNavShell
+      logo={<BrandLogo priority />}
+      desktopNav={desktopNav}
+      mobileNav={mobileNav}
+      utilities={utilities}
+      menuLabel="Menu"
+    />
   );
 }

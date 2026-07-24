@@ -34,7 +34,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
   }
 
   return (
-    <main className="flex min-h-[80svh] items-center justify-center px-6 pb-24 pt-28">
+    <main className="flex min-h-[80svh] items-center justify-center px-6 pb-24 pt-32">
       <CheckoutClient ticketIds={ticketIds} subscriptionId={sub} />
     </main>
   );

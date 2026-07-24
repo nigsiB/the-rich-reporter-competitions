@@ -10,7 +10,7 @@ type CompetitionGridProps = {
 
 export default function CompetitionGrid({ competitions, dict, locale }: CompetitionGridProps) {
   return (
-    <section id="competitions" className="scroll-mt-24" aria-labelledby="competitions-heading">
+    <section id="competitions" className="scroll-mt-28" aria-labelledby="competitions-heading">
       <div className="mb-14 max-w-xl">
         <p className="text-[10px] uppercase tracking-[0.35em] text-[var(--champagne)]">
           {dict.competitionsEyebrow}

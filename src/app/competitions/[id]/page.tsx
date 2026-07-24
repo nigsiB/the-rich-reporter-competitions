@@ -9,6 +9,7 @@ import { getLiveCompetitionById } from "@/lib/competitions";
 import { getSessionProfile } from "@/app/actions/auth";
 import { getDictionary } from "@/i18n/getDictionary";
 import { t } from "@/i18n/dictionaries";
+import { localizeCompetition } from "@/i18n/competitions";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -20,8 +21,10 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
-  const { competition } = await getLiveCompetitionById(id);
-  if (!competition) return { title: "Competition" };
+  const { competition: raw } = await getLiveCompetitionById(id);
+  if (!raw) return { title: "Competition" };
+  const { locale } = await getDictionary();
+  const competition = localizeCompetition(raw, locale);
   return {
     title: `${competition.title} — The Rich Reporter`,
     description: competition.prizeDescription,
@@ -30,10 +33,11 @@ export async function generateMetadata({ params }: PageProps) {
 
 export default async function CompetitionPage({ params }: PageProps) {
   const { id } = await params;
-  const { competition } = await getLiveCompetitionById(id);
-  if (!competition) notFound();
+  const { competition: raw } = await getLiveCompetitionById(id);
+  if (!raw) notFound();
 
-  const { dict } = await getDictionary();
+  const { dict, locale } = await getDictionary();
+  const competition = localizeCompetition(raw, locale);
   const { user } = await getSessionProfile();
   const price = formatUsd(competition.pricePerEntry);
   const cashAlt = formatUsd(competition.cashAlternative);
@@ -67,7 +71,7 @@ export default async function CompetitionPage({ params }: PageProps) {
 
           <p className="text-[10px] uppercase tracking-[0.35em] text-[var(--champagne)]">
             {dict.limitedTo} {competition.totalEntries.toLocaleString("en-US")} {dict.entriesWord}
-            {competition.isMonthly ? " · Monthly" : ""}
+            {competition.isMonthly ? ` · ${dict.monthly}` : ""}
           </p>
           <h1 className="mt-4 font-[family-name:var(--font-display)] text-4xl tracking-wide text-[var(--fg)] md:text-5xl lg:text-6xl">
             {competition.title}
@@ -81,12 +85,15 @@ export default async function CompetitionPage({ params }: PageProps) {
               <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
                 {dict.liveInventory}
               </span>
-              <CountdownTimer drawDate={competition.drawDate} />
+              <CountdownTimer drawDate={competition.drawDate} drawClosedLabel={dict.drawClosed} />
             </div>
             <InventoryBar
               competitionId={competition.id}
               totalEntries={competition.totalEntries}
               initialAvailable={competition.entriesRemaining}
+              availableLabel={dict.available}
+              remainingLabel={dict.remaining}
+              ariaLabelTemplate={dict.pctAvailableAria}
             />
             <p className="text-sm text-[var(--muted)]">
               <span className="text-[var(--fg)]">{price}</span> {dict.perEntry} · {dict.chooseQty}

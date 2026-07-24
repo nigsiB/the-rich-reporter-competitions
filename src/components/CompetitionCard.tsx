@@ -4,16 +4,24 @@ import type { Competition } from "@/data/competitions";
 import { formatUsd } from "@/data/competitions";
 import CountdownTimer from "@/components/CountdownTimer";
 import InventoryBar from "@/components/InventoryBar";
-import type { Dictionary } from "@/i18n/dictionaries";
+import type { Dictionary, Locale } from "@/i18n/dictionaries";
 import { t } from "@/i18n/dictionaries";
+import { localizeCompetition } from "@/i18n/competitions";
 
 type CompetitionCardProps = {
   competition: Competition;
   index: number;
   dict: Dictionary;
+  locale: Locale;
 };
 
-export default function CompetitionCard({ competition, index, dict }: CompetitionCardProps) {
+export default function CompetitionCard({
+  competition: raw,
+  index,
+  dict,
+  locale,
+}: CompetitionCardProps) {
+  const competition = localizeCompetition(raw, locale);
   const price = formatUsd(competition.pricePerEntry);
 
   return (
@@ -74,12 +82,15 @@ export default function CompetitionCard({ competition, index, dict }: Competitio
 
         <div className="mt-auto space-y-3 pt-2">
           <div className="flex justify-end">
-            <CountdownTimer drawDate={competition.drawDate} />
+            <CountdownTimer drawDate={competition.drawDate} drawClosedLabel={dict.drawClosed} />
           </div>
           <InventoryBar
             competitionId={competition.id}
             totalEntries={competition.totalEntries}
             initialAvailable={competition.entriesRemaining}
+            availableLabel={dict.available}
+            remainingLabel={dict.remaining}
+            ariaLabelTemplate={dict.pctAvailableAria}
           />
           <p className="sr-only">
             {t(dict, "cashAltLine", { amount: formatUsd(competition.cashAlternative) })}

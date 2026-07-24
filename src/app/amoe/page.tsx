@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getActiveCompetitions } from "@/lib/competitions";
 import { getDictionary } from "@/i18n/getDictionary";
+import { localizeCompetitions } from "@/i18n/competitions";
 
 export const metadata: Metadata = {
   title: "AMOE — Free mail-in entry",
@@ -9,8 +10,9 @@ export const metadata: Metadata = {
 };
 
 export default async function AmoeIndexPage() {
-  const { competitions } = await getActiveCompetitions();
-  const { dict } = await getDictionary();
+  const { competitions: raw } = await getActiveCompetitions();
+  const { dict, locale } = await getDictionary();
+  const competitions = localizeCompetitions(raw, locale);
 
   return (
     <main className="mx-auto max-w-3xl px-6 pb-28 pt-32 md:px-10">

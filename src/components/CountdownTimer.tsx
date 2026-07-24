@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 type CountdownTimerProps = {
   drawDate: string;
+  drawClosedLabel?: string;
 };
 
 type Remaining = {
@@ -30,7 +31,10 @@ function pad(n: number) {
   return String(n).padStart(2, "0");
 }
 
-export default function CountdownTimer({ drawDate }: CountdownTimerProps) {
+export default function CountdownTimer({
+  drawDate,
+  drawClosedLabel = "Draw closed",
+}: CountdownTimerProps) {
   const [remaining, setRemaining] = useState<Remaining | null>(null);
 
   useEffect(() => {
@@ -55,7 +59,7 @@ export default function CountdownTimer({ drawDate }: CountdownTimerProps) {
 
   if (remaining.expired) {
     return (
-      <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">Draw closed</p>
+      <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">{drawClosedLabel}</p>
     );
   }
 

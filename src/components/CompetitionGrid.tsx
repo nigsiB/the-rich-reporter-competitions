@@ -1,13 +1,14 @@
 import CompetitionCard from "@/components/CompetitionCard";
 import type { Competition } from "@/data/competitions";
-import type { Dictionary } from "@/i18n/dictionaries";
+import type { Dictionary, Locale } from "@/i18n/dictionaries";
 
 type CompetitionGridProps = {
   competitions: Competition[];
   dict: Dictionary;
+  locale: Locale;
 };
 
-export default function CompetitionGrid({ competitions, dict }: CompetitionGridProps) {
+export default function CompetitionGrid({ competitions, dict, locale }: CompetitionGridProps) {
   return (
     <section id="competitions" className="scroll-mt-24" aria-labelledby="competitions-heading">
       <div className="mb-14 max-w-xl">
@@ -32,6 +33,7 @@ export default function CompetitionGrid({ competitions, dict }: CompetitionGridP
             competition={competition}
             index={index}
             dict={dict}
+            locale={locale}
           />
         ))}
       </div>

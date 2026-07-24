@@ -80,6 +80,10 @@ const en = {
   footerTerms: "Terms",
   monthly: "Monthly",
   retailApprox: "Approx. retail",
+  available: "available",
+  remaining: "remaining",
+  pctAvailableAria: "{pct} percent of entries still available",
+  drawClosed: "Draw closed",
 
   // Membership
   membershipEyebrow: "Membership",
@@ -263,6 +267,10 @@ const es: Dictionary = {
   footerTerms: "Términos",
   monthly: "Mensual",
   retailApprox: "Valor aprox.",
+  available: "disponible",
+  remaining: "restantes",
+  pctAvailableAria: "{pct} por ciento de entradas aún disponibles",
+  drawClosed: "Sorteo cerrado",
 
   membershipEyebrow: "Membresía",
   membershipHeading: "Únete al círculo",
@@ -438,6 +446,10 @@ const fr: Dictionary = {
   footerTerms: "Conditions",
   monthly: "Mensuel",
   retailApprox: "Valeur approx.",
+  available: "disponibles",
+  remaining: "restantes",
+  pctAvailableAria: "{pct} pour cent des entrées encore disponibles",
+  drawClosed: "Tirage clos",
 
   membershipEyebrow: "Adhésion",
   membershipHeading: "Rejoindre le cercle",
@@ -613,6 +625,10 @@ const de: Dictionary = {
   footerTerms: "Bedingungen",
   monthly: "Monatlich",
   retailApprox: "Ungef. UVP",
+  available: "verfügbar",
+  remaining: "übrig",
+  pctAvailableAria: "{pct} Prozent der Einträge noch verfügbar",
+  drawClosed: "Ziehung geschlossen",
 
   membershipEyebrow: "Mitgliedschaft",
   membershipHeading: "Dem Kreis beitreten",
@@ -788,6 +804,10 @@ const pt: Dictionary = {
   footerTerms: "Termos",
   monthly: "Mensal",
   retailApprox: "Valor aprox.",
+  available: "disponíveis",
+  remaining: "restantes",
+  pctAvailableAria: "{pct} por cento das entradas ainda disponíveis",
+  drawClosed: "Sorteio encerrado",
 
   membershipEyebrow: "Associação",
   membershipHeading: "Junte-se ao círculo",
@@ -963,6 +983,10 @@ const it: Dictionary = {
   footerTerms: "Termini",
   monthly: "Mensile",
   retailApprox: "Valore approx.",
+  available: "disponibili",
+  remaining: "rimanenti",
+  pctAvailableAria: "{pct} per cento delle iscrizioni ancora disponibili",
+  drawClosed: "Estrazione chiusa",
 
   membershipEyebrow: "Iscrizione",
   membershipHeading: "Unisciti al circolo",

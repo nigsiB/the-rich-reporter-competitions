@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import PrintButton from "@/components/PrintButton";
 import { getLiveCompetitionById } from "@/lib/competitions";
+import { getDictionary } from "@/i18n/getDictionary";
+import { localizeCompetition } from "@/i18n/competitions";
 import type { Metadata } from "next";
 
 type PageProps = {
@@ -10,16 +12,22 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const { competition } = await getLiveCompetitionById(id);
+  const { competition: raw } = await getLiveCompetitionById(id);
+  if (!raw) return { title: "AMOE form — The Rich Reporter" };
+  const { locale } = await getDictionary();
+  const competition = localizeCompetition(raw, locale);
   return {
-    title: competition ? `AMOE — ${competition.title}` : "AMOE form — The Rich Reporter",
+    title: `AMOE — ${competition.title}`,
   };
 }
 
 export default async function AmoeFormPage({ params }: PageProps) {
   const { id } = await params;
-  const { competition } = await getLiveCompetitionById(id);
-  if (!competition) notFound();
+  const { competition: raw } = await getLiveCompetitionById(id);
+  if (!raw) notFound();
+
+  const { locale, dict } = await getDictionary();
+  const competition = localizeCompetition(raw, locale);
 
   const mailTo = "Rich Reporter Magazine — Competitions Desk, AMOE Processing, United States";
 
@@ -37,7 +45,7 @@ export default async function AmoeFormPage({ params }: PageProps) {
 
       <article className="border border-[var(--border)] bg-[var(--bg-elevated)] px-8 py-10 text-[var(--fg)] md:px-12 md:py-14 print:border-black print:bg-white print:text-black">
         <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--champagne)] print:text-neutral-600">
-          Alternative Method of Entry
+          {dict.amoe}
         </p>
         <h1 className="mt-4 font-[family-name:var(--font-display)] text-3xl tracking-wide md:text-4xl">
           {competition.title}

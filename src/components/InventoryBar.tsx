@@ -7,12 +7,18 @@ type InventoryBarProps = {
   competitionId: string;
   totalEntries: number;
   initialAvailable: number;
+  availableLabel?: string;
+  remainingLabel?: string;
+  ariaLabelTemplate?: string;
 };
 
 export default function InventoryBar({
   competitionId,
   totalEntries,
   initialAvailable,
+  availableLabel = "available",
+  remainingLabel = "remaining",
+  ariaLabelTemplate = "{pct} percent of entries still available",
 }: InventoryBarProps) {
   const [available, setAvailable] = useState(initialAvailable);
 
@@ -59,15 +65,16 @@ export default function InventoryBar({
   }, [competitionId]);
 
   const pct = totalEntries > 0 ? Math.round((available / totalEntries) * 100) : 0;
+  const ariaLabel = ariaLabelTemplate.replace("{pct}", String(pct));
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-3">
         <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
-          {pct}% available
+          {pct}% {availableLabel}
         </span>
         <span className="text-[10px] uppercase tracking-[0.18em] text-[var(--muted)]">
-          {available.toLocaleString("en-US")} remaining
+          {available.toLocaleString("en-US")} {remainingLabel}
         </span>
       </div>
       <div
@@ -76,7 +83,7 @@ export default function InventoryBar({
         aria-valuenow={pct}
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-label={`${pct} percent of entries still available`}
+        aria-label={ariaLabel}
       >
         <div className="h-px bg-[var(--champagne)] transition-all duration-700" style={{ width: `${pct}%` }} />
       </div>

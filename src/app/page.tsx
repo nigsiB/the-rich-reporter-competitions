@@ -6,7 +6,7 @@ import { getDictionary } from "@/i18n/getDictionary";
 
 export default async function HomePage() {
   const { competitions } = await getActiveCompetitions();
-  const { dict } = await getDictionary();
+  const { dict, locale } = await getDictionary();
 
   return (
     <main>
@@ -62,7 +62,7 @@ export default async function HomePage() {
       </section>
 
       <div className="mx-auto max-w-7xl space-y-28 px-6 py-24 md:px-10 md:py-32">
-        <CompetitionGrid competitions={competitions} dict={dict} />
+        <CompetitionGrid competitions={competitions} dict={dict} locale={locale} />
 
         <section id="how-it-works" className="scroll-mt-24" aria-labelledby="membership-heading">
           <div className="grid gap-12 md:grid-cols-2 md:gap-20">

@@ -7,8 +7,8 @@
   --bg-elevated: #141412;
   --fg: #f4f1ea;
   --muted: #8a8680;
-  --champagne: #d6a079;
-  --champagne-soft: #b08a6e;
+  --champagne: #c4a574;
+  --champagne-soft: #a8906a;
   --border: rgba(244, 241, 234, 0.08);
   --border-strong: rgba(244, 241, 234, 0.16);
 }
@@ -44,8 +44,8 @@ body::before {
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(214, 160, 121, 0.07), transparent 55%),
-    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(214, 160, 121, 0.04), transparent 50%),
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(196, 165, 116, 0.07), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(196, 165, 116, 0.04), transparent 50%),
     var(--bg-deep);
 }
 
@@ -64,7 +64,7 @@ body::before {
   border-radius: 50%;
   background: var(--champagne);
   border: 2px solid var(--bg-deep);
-  box-shadow: 0 0 0 1px rgba(214, 160, 121, 0.35);
+  box-shadow: 0 0 0 1px rgba(196, 165, 116, 0.35);
   cursor: pointer;
   transition: transform 0.25s ease;
 }
@@ -79,7 +79,7 @@ body::before {
   border-radius: 50%;
   background: var(--champagne);
   border: 2px solid var(--bg-deep);
-  box-shadow: 0 0 0 1px rgba(214, 160, 121, 0.35);
+  box-shadow: 0 0 0 1px rgba(196, 165, 116, 0.35);
   cursor: pointer;
 }
 

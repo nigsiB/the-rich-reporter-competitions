@@ -114,7 +114,7 @@ export default function TicketCheckoutBtn({
             onChange={(e) => setQuantity(Number(e.target.value))}
             className="ticket-slider w-full cursor-pointer appearance-none bg-transparent"
             style={{
-              background: `linear-gradient(to right, var(--champagne) 0%, var(--champagne) ${progress}%, rgba(214, 160, 121, 0.18) ${progress}%, rgba(214, 160, 121, 0.18) 100%)`,
+              background: `linear-gradient(to right, var(--champagne) 0%, var(--champagne) ${progress}%, rgba(196, 165, 116, 0.18) ${progress}%, rgba(196, 165, 116, 0.18) 100%)`,
               height: "2px",
               borderRadius: 0,
             }}

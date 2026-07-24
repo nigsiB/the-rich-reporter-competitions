@@ -23,7 +23,7 @@ export default async function ContactPage() {
       </p>
 
       <div className="mt-14 border border-[var(--border)] bg-[var(--bg-elevated)] px-6 py-10 md:px-10 md:py-12">
-        <ContactForm />
+        <ContactForm dict={dict} />
       </div>
     </main>
   );

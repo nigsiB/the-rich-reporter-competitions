@@ -78,7 +78,7 @@ export default async function MembershipPage() {
 
       {!isAuthenticated ? (
         <div className="mt-10 border border-[var(--border)] bg-[var(--bg-elevated)] px-6 py-10 md:px-10 md:py-12">
-          <MembershipForm />
+          <MembershipForm dict={dict} />
         </div>
       ) : null}
     </main>

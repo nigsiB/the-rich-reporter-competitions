@@ -3,12 +3,14 @@
 import { useState, type FormEvent } from "react";
 import { signInAction } from "@/app/actions/auth";
 import { fieldClass, labelClass, primaryBtnClass } from "@/components/formStyles";
+import type { Dictionary } from "@/i18n/dictionaries";
 
 type LoginFormProps = {
   nextPath?: string;
+  dict: Dictionary;
 };
 
-export default function LoginForm({ nextPath = "/" }: LoginFormProps) {
+export default function LoginForm({ nextPath = "/", dict }: LoginFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -37,13 +39,13 @@ export default function LoginForm({ nextPath = "/" }: LoginFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <label htmlFor="email" className={labelClass}>
-          Email
+          {dict.accountEmail}
         </label>
         <input id="email" name="email" type="email" required autoComplete="email" className={fieldClass} />
       </div>
       <div>
         <label htmlFor="password" className={labelClass}>
-          Password
+          {dict.formPassword}
         </label>
         <input
           id="password"
@@ -62,7 +64,7 @@ export default function LoginForm({ nextPath = "/" }: LoginFormProps) {
       ) : null}
 
       <button type="submit" disabled={loading} className={primaryBtnClass}>
-        {loading ? "Signing in…" : "Sign in"}
+        {loading ? dict.signingIn : dict.signIn}
       </button>
     </form>
   );

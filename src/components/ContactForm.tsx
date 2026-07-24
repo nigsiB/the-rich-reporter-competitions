@@ -3,8 +3,13 @@
 import { useState, type FormEvent } from "react";
 import { submitContactAction } from "@/app/actions/contact";
 import { fieldClass, labelClass, primaryBtnClass } from "@/components/formStyles";
+import type { Dictionary } from "@/i18n/dictionaries";
 
-export default function ContactForm() {
+type ContactFormProps = {
+  dict: Dictionary;
+};
+
+export default function ContactForm({ dict }: ContactFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -29,7 +34,7 @@ export default function ContactForm() {
       return;
     }
 
-    setSuccess(result.message ?? "Sent.");
+    setSuccess(result.message ?? dict.contactSent);
     e.currentTarget.reset();
   };
 
@@ -38,26 +43,26 @@ export default function ContactForm() {
       <div className="grid gap-5 md:grid-cols-2">
         <div>
           <label htmlFor="fullName" className={labelClass}>
-            Full name
+            {dict.accountFullName}
           </label>
           <input id="fullName" name="fullName" required className={fieldClass} />
         </div>
         <div>
           <label htmlFor="email" className={labelClass}>
-            Email
+            {dict.accountEmail}
           </label>
           <input id="email" name="email" type="email" required className={fieldClass} />
         </div>
       </div>
       <div>
         <label htmlFor="subject" className={labelClass}>
-          Subject
+          {dict.contactSubject}
         </label>
         <input id="subject" name="subject" required className={fieldClass} />
       </div>
       <div>
         <label htmlFor="message" className={labelClass}>
-          Message
+          {dict.contactMessage}
         </label>
         <textarea id="message" name="message" required rows={6} className={fieldClass} />
       </div>
@@ -74,7 +79,7 @@ export default function ContactForm() {
       ) : null}
 
       <button type="submit" disabled={loading} className={primaryBtnClass}>
-        {loading ? "Sending…" : "Send message"}
+        {loading ? dict.contactSending : dict.contactSend}
       </button>
     </form>
   );

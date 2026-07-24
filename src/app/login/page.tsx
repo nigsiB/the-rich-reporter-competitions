@@ -25,7 +25,7 @@ export default async function LoginPage({ searchParams }: PageProps) {
       </h1>
       <p className="mt-4 text-sm text-[var(--muted)]">{dict.loginIntro}</p>
       <div className="mt-10 border border-[var(--border)] bg-[var(--bg-elevated)] px-8 py-10">
-        <LoginForm nextPath={next || "/"} />
+        <LoginForm nextPath={next || "/"} dict={dict} />
       </div>
       <p className="mt-6 text-center text-sm text-[var(--muted)]">
         {dict.loginNewHere}{" "}

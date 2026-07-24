@@ -275,3 +275,125 @@ export async function listContactMessages() {
 
   return data ?? [];
 }
+
+export type AdminMember = {
+  id: string;
+  email: string | null;
+  full_name: string | null;
+  country: string | null;
+  created_at: string | null;
+  marketing_opt_in: boolean | null;
+  is_admin: boolean | null;
+  phone: string | null;
+  address_line1: string | null;
+  address_line2: string | null;
+  city: string | null;
+  state: string | null;
+  postal_code: string | null;
+  ticket_count: number;
+};
+
+export async function listAdminMembers(): Promise<{
+  members: AdminMember[];
+  currentUserId: string | null;
+  error?: string;
+}> {
+  const { error, supabase, userId } = await requireAdmin();
+  if (error || !supabase) {
+    return { members: [], currentUserId: null, error: error ?? "Admin access required." };
+  }
+
+  const { data: profiles, error: profilesError } = await supabase
+    .from("profiles")
+    .select(
+      "id, email, full_name, country, created_at, marketing_opt_in, is_admin, phone, address_line1, address_line2, city, state, postal_code",
+    )
+    .order("created_at", { ascending: false });
+
+  if (profilesError) {
+    return { members: [], currentUserId: userId, error: profilesError.message };
+  }
+
+  const ids = (profiles ?? []).map((p) => p.id);
+  const ticketCounts = new Map<string, number>();
+
+  if (ids.length > 0) {
+    const { data: tickets } = await supabase
+      .from("tickets")
+      .select("user_id")
+      .in("user_id", ids)
+      .eq("status", "sold");
+
+    for (const row of tickets ?? []) {
+      if (!row.user_id) continue;
+      ticketCounts.set(row.user_id, (ticketCounts.get(row.user_id) ?? 0) + 1);
+    }
+  }
+
+  const members: AdminMember[] = (profiles ?? []).map((p) => ({
+    id: p.id,
+    email: p.email,
+    full_name: p.full_name,
+    country: p.country,
+    created_at: p.created_at,
+    marketing_opt_in: p.marketing_opt_in,
+    is_admin: p.is_admin,
+    phone: p.phone,
+    address_line1: p.address_line1,
+    address_line2: p.address_line2,
+    city: p.city,
+    state: p.state,
+    postal_code: p.postal_code,
+    ticket_count: ticketCounts.get(p.id) ?? 0,
+  }));
+
+  return { members, currentUserId: userId };
+}
+
+export async function setMemberAdminAction(
+  memberId: string,
+  isAdmin: boolean,
+): Promise<ActionResult> {
+  const { error, supabase, userId } = await requireAdmin();
+  if (error || !supabase || !userId) return { success: false, error: error ?? "Admin access required." };
+
+  if (!memberId?.trim()) {
+    return { success: false, error: "Member id is required." };
+  }
+
+  if (!isAdmin) {
+    const { data: admins, error: countError } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("is_admin", true);
+
+    if (countError) {
+      return { success: false, error: countError.message };
+    }
+
+    const adminIds = (admins ?? []).map((a) => a.id);
+    const isTargetAdmin = adminIds.includes(memberId);
+    if (isTargetAdmin && adminIds.length <= 1) {
+      return { success: false, error: "Cannot revoke the last remaining admin." };
+    }
+
+    if (memberId === userId && adminIds.length <= 1) {
+      return { success: false, error: "You cannot revoke your own admin access while you are the only admin." };
+    }
+  }
+
+  const { error: updateError } = await supabase
+    .from("profiles")
+    .update({ is_admin: isAdmin, updated_at: new Date().toISOString() })
+    .eq("id", memberId);
+
+  if (updateError) {
+    return { success: false, error: updateError.message };
+  }
+
+  revalidatePath("/admin/members");
+  return {
+    success: true,
+    message: isAdmin ? "Admin privileges granted." : "Admin privileges revoked.",
+  };
+}

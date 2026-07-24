@@ -233,6 +233,44 @@ CREATE POLICY "profiles_update_own" ON profiles
     USING (auth.uid() = id OR public.is_admin())
     WITH CHECK (auth.uid() = id OR public.is_admin());
 
+-- Only admins may change is_admin; block demoting the last admin
+CREATE OR REPLACE FUNCTION public.protect_is_admin_column()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF NEW.is_admin IS DISTINCT FROM OLD.is_admin THEN
+    IF NOT COALESCE(
+      (SELECT is_admin FROM public.profiles WHERE id = auth.uid()),
+      false
+    ) THEN
+      RAISE EXCEPTION 'Only admins can change is_admin';
+    END IF;
+
+    IF OLD.is_admin = true AND NEW.is_admin = false THEN
+      IF (
+        SELECT COUNT(*)::int
+        FROM public.profiles
+        WHERE is_admin = true
+          AND id IS DISTINCT FROM OLD.id
+      ) = 0 THEN
+        RAISE EXCEPTION 'Cannot revoke the last remaining admin';
+      END IF;
+    END IF;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS protect_is_admin_column ON public.profiles;
+CREATE TRIGGER protect_is_admin_column
+  BEFORE UPDATE ON public.profiles
+  FOR EACH ROW
+  EXECUTE FUNCTION public.protect_is_admin_column();
+
 -- Competitions: public read active; admins full access
 CREATE POLICY "competitions_public_read" ON competitions
     FOR SELECT USING (status = 'active' OR public.is_admin());

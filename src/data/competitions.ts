@@ -6,6 +6,8 @@ export type Competition = {
   prizeDescription: string;
   /** Manual per-locale copy from competitions.translations (es/fr/de/pt/it). */
   translations?: CompetitionTranslations | null;
+  /** When true, skip locale overrides and show English title/description. */
+  translationsCascade?: boolean;
   totalEntries: number;
   entriesRemaining: number;
   pricePerEntry: number;
@@ -15,6 +17,8 @@ export type Competition = {
   retailValue: number;
   drawDate: string;
   imageUrl: string;
+  /** Additional images; empty keeps single-image presentation. */
+  galleryUrls?: string[];
   displayOrder: number;
   status: "active" | "paused" | "completed";
   /** Rolling monthly draw (e.g. magazine advert). */

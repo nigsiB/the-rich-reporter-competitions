@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import CompetitionGallery from "@/components/CompetitionGallery";
 import CountdownTimer from "@/components/CountdownTimer";
 import InventoryBar from "@/components/InventoryBar";
 import TicketCheckoutBtn from "@/components/TicketCheckoutBtn";
@@ -46,20 +46,11 @@ export default async function CompetitionPage({ params }: PageProps) {
   return (
     <main className="pt-32">
       <div className="mx-auto grid max-w-7xl gap-12 px-6 pb-28 md:grid-cols-2 md:gap-16 md:px-10 lg:gap-24">
-        <div className="relative aspect-[4/5] overflow-hidden bg-[var(--bg-elevated)]">
-          <Image
-            src={competition.imageUrl}
-            alt={competition.title}
-            fill
-            priority
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover brightness-[0.72] contrast-[1.12] saturate-[0.85]"
-          />
-          <div
-            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--bg-deep)]/55 via-transparent to-[var(--bg-deep)]/20"
-            aria-hidden="true"
-          />
-        </div>
+        <CompetitionGallery
+          title={competition.title}
+          mainUrl={competition.imageUrl}
+          galleryUrls={competition.galleryUrls ?? []}
+        />
 
         <div className="flex flex-col justify-center py-4">
           <Link

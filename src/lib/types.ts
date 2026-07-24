@@ -54,6 +54,11 @@ export type CompetitionAdminInput = {
   prizeDescription: string;
   /** Manual translations for ES/FR/DE/PT/IT (English uses title/prizeDescription). */
   translations?: CompetitionTranslations;
+  /**
+   * When true, other locales fall back to English; translations are left empty on save.
+   * Default true for new competitions.
+   */
+  translationsCascade?: boolean;
   totalEntries: number;
   pricePerEntry: number;
   cashAlternative: number;
@@ -61,6 +66,8 @@ export type CompetitionAdminInput = {
   isMonthly: boolean;
   drawDate: string;
   imageUrl: string;
+  /** Extra images beyond the main imageUrl (order preserved). */
+  galleryUrls?: string[];
   displayOrder: number;
   status: "active" | "paused" | "completed";
   generateTickets?: boolean;

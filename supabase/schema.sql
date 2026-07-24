@@ -36,10 +36,14 @@ CREATE TABLE IF NOT EXISTS competitions (
     is_monthly BOOLEAN DEFAULT false,
     draw_date TIMESTAMP WITH TIME ZONE,
     image_url TEXT,
+    -- Extra images beyond image_url (main). Empty = single-image behaviour.
+    gallery_urls TEXT[] NOT NULL DEFAULT '{}'::text[],
     display_order INT NOT NULL DEFAULT 0,
     status TEXT DEFAULT 'active' CHECK (status IN ('active', 'paused', 'completed')),
     -- Per-locale title + prize_description for es/fr/de/pt/it (English uses primary columns)
     translations JSONB NOT NULL DEFAULT '{}'::jsonb,
+    -- When true, locales fall back to English; translations left empty
+    translations_cascade BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

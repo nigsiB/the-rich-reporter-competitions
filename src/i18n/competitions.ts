@@ -231,10 +231,16 @@ function copyFromStored(
 
 /**
  * Overlay translated title/description for the active locale.
- * Preference: translations JSONB → English primary fields → static i18n map (legacy seed rows).
+ * Preference: when cascade is on → English primary fields;
+ * otherwise translations JSONB → static i18n map (legacy seed rows) → English.
  */
 export function localizeCompetition(competition: Competition, locale: Locale): Competition {
   if (locale === "en") return competition;
+
+  // Explicit cascade: always show English until admin opts into custom copy.
+  if (competition.translationsCascade) {
+    return competition;
+  }
 
   const fromDb = copyFromStored(
     competition.translations?.[locale as TranslationLocale],

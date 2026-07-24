@@ -13,11 +13,24 @@ export default async function EditCompetitionPage({ params }: PageProps) {
   const competition = await getAdminCompetition(id);
   if (!competition) notFound();
 
-  const translations = resolveAdminTranslations(
-    competition.id,
-    competition.title,
-    (competition.translations ?? null) as CompetitionTranslations | null,
-  );
+  const cascade =
+    typeof competition.translations_cascade === "boolean"
+      ? competition.translations_cascade
+      : false;
+
+  const translations = cascade
+    ? {}
+    : resolveAdminTranslations(
+        competition.id,
+        competition.title,
+        (competition.translations ?? null) as CompetitionTranslations | null,
+      );
+
+  const galleryUrls = Array.isArray(competition.gallery_urls)
+    ? (competition.gallery_urls as string[]).filter(
+        (u): u is string => typeof u === "string" && u.trim().length > 0,
+      )
+    : [];
 
   return (
     <div>
@@ -32,6 +45,7 @@ export default async function EditCompetitionPage({ params }: PageProps) {
             title: competition.title,
             prizeDescription: competition.prize_description,
             translations,
+            translationsCascade: cascade,
             totalEntries: competition.total_entries,
             pricePerEntry: Number(competition.price_per_entry),
             cashAlternative: Number(competition.cash_alternative ?? 0),
@@ -39,6 +53,7 @@ export default async function EditCompetitionPage({ params }: PageProps) {
             isMonthly: Boolean(competition.is_monthly),
             drawDate: competition.draw_date ?? "",
             imageUrl: competition.image_url ?? "",
+            galleryUrls,
             displayOrder: competition.display_order ?? 0,
             status: competition.status,
           }}

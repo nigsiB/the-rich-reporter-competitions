@@ -9,6 +9,7 @@ type DbCompetition = {
   title: string;
   prize_description: string;
   translations?: CompetitionTranslations | null;
+  translations_cascade?: boolean | null;
   total_entries: number;
   price_per_entry: number | string;
   cash_alternative?: number | string | null;
@@ -16,16 +17,22 @@ type DbCompetition = {
   is_monthly?: boolean | null;
   draw_date: string | null;
   image_url: string | null;
+  gallery_urls?: string[] | null;
   display_order: number | null;
   status: "active" | "paused" | "completed";
 };
 
 function mapCompetition(row: DbCompetition, entriesRemaining: number): Competition {
+  const gallery = Array.isArray(row.gallery_urls)
+    ? row.gallery_urls.filter((u): u is string => typeof u === "string" && u.trim().length > 0)
+    : [];
   return {
     id: row.id,
     title: row.title,
     prizeDescription: row.prize_description,
     translations: row.translations ?? null,
+    // DB default is true for new rows; missing/legacy rows keep locale overrides (static map).
+    translationsCascade: row.translations_cascade ?? false,
     totalEntries: row.total_entries,
     entriesRemaining,
     pricePerEntry: Number(row.price_per_entry),
@@ -33,6 +40,7 @@ function mapCompetition(row: DbCompetition, entriesRemaining: number): Competiti
     retailValue: Number(row.retail_value ?? row.cash_alternative ?? 0),
     drawDate: row.draw_date ?? new Date().toISOString(),
     imageUrl: row.image_url ?? "",
+    galleryUrls: gallery,
     displayOrder: row.display_order ?? 0,
     status: row.status,
     isMonthly: Boolean(row.is_monthly),

@@ -28,6 +28,19 @@ function normalizeTranslations(
   return out;
 }
 
+function normalizeGalleryUrls(urls: string[] | undefined, mainUrl: string): string[] {
+  if (!urls?.length) return [];
+  const seen = new Set<string>([mainUrl.trim()]);
+  const out: string[] = [];
+  for (const raw of urls) {
+    const url = raw.trim();
+    if (!url || seen.has(url)) continue;
+    seen.add(url);
+    out.push(url);
+  }
+  return out;
+}
+
 async function requireAdmin() {
   if (!isSupabaseConfigured()) {
     return { error: "Supabase is not configured." as const, supabase: null, userId: null };
@@ -106,19 +119,25 @@ export async function createCompetitionAction(
   const { error, supabase } = await requireAdmin();
   if (error || !supabase) return { success: false, error };
 
+  const cascade = Boolean(input.translationsCascade);
+  const imageUrl = input.imageUrl.trim();
+  const galleryUrls = normalizeGalleryUrls(input.galleryUrls, imageUrl);
+
   const { data, error: insertError } = await supabase
     .from("competitions")
     .insert({
       title: input.title.trim(),
       prize_description: input.prizeDescription.trim(),
-      translations: normalizeTranslations(input.translations),
+      translations: cascade ? {} : normalizeTranslations(input.translations),
+      translations_cascade: cascade,
       total_entries: input.totalEntries,
       price_per_entry: input.pricePerEntry,
       cash_alternative: input.cashAlternative,
       retail_value: input.retailValue,
       is_monthly: input.isMonthly,
       draw_date: input.drawDate || null,
-      image_url: input.imageUrl.trim(),
+      image_url: imageUrl,
+      gallery_urls: galleryUrls,
       display_order: input.displayOrder,
       status: input.status,
     })
@@ -148,19 +167,25 @@ export async function updateCompetitionAction(
   const { error, supabase } = await requireAdmin();
   if (error || !supabase) return { success: false, error };
 
+  const cascade = Boolean(input.translationsCascade);
+  const imageUrl = input.imageUrl.trim();
+  const galleryUrls = normalizeGalleryUrls(input.galleryUrls, imageUrl);
+
   const { error: updateError } = await supabase
     .from("competitions")
     .update({
       title: input.title.trim(),
       prize_description: input.prizeDescription.trim(),
-      translations: normalizeTranslations(input.translations),
+      translations: cascade ? {} : normalizeTranslations(input.translations),
+      translations_cascade: cascade,
       total_entries: input.totalEntries,
       price_per_entry: input.pricePerEntry,
       cash_alternative: input.cashAlternative,
       retail_value: input.retailValue,
       is_monthly: input.isMonthly,
       draw_date: input.drawDate || null,
-      image_url: input.imageUrl.trim(),
+      image_url: imageUrl,
+      gallery_urls: galleryUrls,
       display_order: input.displayOrder,
       status: input.status,
       updated_at: new Date().toISOString(),

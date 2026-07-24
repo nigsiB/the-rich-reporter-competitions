@@ -601,7 +601,7 @@ const de: Dictionary = {
   loginRequired: "Anmelden, um Teilnahmen zu kaufen",
   loginRequiredBody:
     "Mitgliedschaft ist vor dem Checkout erforderlich. Nach der Anmeldung kehren Sie hierher zurück.",
-  monthlyClub: "Patron Circle",
+  monthlyClub: "Mäzenkreis",
   monthlyClubBody:
     "Ein monatliches Abonnement für Leser, die eine dauerhafte Beziehung zum Magazin bevorzugen — große internationale Zahlungen sicher über Stripe.",
   subscribeMonthly: "Monatlich abonnieren",

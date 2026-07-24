@@ -274,7 +274,7 @@ export default function CheckoutClient({ ticketIds, subscriptionId }: CheckoutCl
             appearance: {
               theme: "night",
               variables: {
-                colorPrimary: "#c4a574",
+                colorPrimary: "#d6a079",
                 colorBackground: "#141412",
                 colorText: "#f4f1ea",
                 colorDanger: "#f87171",

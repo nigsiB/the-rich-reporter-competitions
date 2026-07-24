@@ -55,7 +55,7 @@ export default async function PrivacyPage() {
           Your choices
         </h2>
         <p>
-          Use Manage account to update profile details and marketing preference, or contact the
+          Use Account to update profile details and marketing preference, or contact the
           competitions desk to request access/deletion subject to legal retention needs for
           sweepstakes compliance.
         </p>

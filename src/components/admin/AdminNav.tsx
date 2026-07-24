@@ -4,7 +4,7 @@ const links = [
   { href: "/admin", label: "Competitions" },
   { href: "/admin/competitions/new", label: "Add new" },
   { href: "/admin/messages", label: "Messages" },
-  { href: "/account", label: "Manage account" },
+  { href: "/account", label: "Account" },
 ];
 
 export default function AdminNav() {

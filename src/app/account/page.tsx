@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Manage account — The Rich Reporter",
+  title: "Account — The Rich Reporter",
   description: "Update your membership profile, mailing address, and password.",
 };
 

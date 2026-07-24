@@ -42,7 +42,6 @@ export default async function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-3 sm:gap-4">
-          <LanguageSwitcher locale={locale} label={dict.language} />
           {user ? (
             <>
               <Link
@@ -61,19 +60,22 @@ export default async function SiteHeader() {
               </form>
             </>
           ) : (
-            <Link
-              href="/login"
-              className="hidden text-[10px] uppercase tracking-[0.24em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)] sm:inline"
-            >
-              {dict.signIn}
-            </Link>
+            <>
+              <Link
+                href="/login"
+                className="hidden text-[10px] uppercase tracking-[0.24em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)] sm:inline"
+              >
+                {dict.signIn}
+              </Link>
+              <Link
+                href="/membership"
+                className="text-[10px] uppercase tracking-[0.24em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)]"
+              >
+                {dict.join}
+              </Link>
+            </>
           )}
-          <Link
-            href={user ? "/#competitions" : "/membership"}
-            className="border border-[var(--border)] px-5 py-2.5 text-[10px] uppercase tracking-[0.24em] text-[var(--fg)] transition-all duration-300 hover:border-[var(--champagne)] hover:text-[var(--champagne)]"
-          >
-            {user ? dict.enter : dict.join}
-          </Link>
+          <LanguageSwitcher locale={locale} label={dict.language} />
         </div>
       </div>
     </header>

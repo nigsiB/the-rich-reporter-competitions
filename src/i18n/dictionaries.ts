@@ -60,7 +60,7 @@ const en = {
   navContact: "Contact",
   navFreeEntry: "Free Entry",
   navAdmin: "Admin",
-  navAccount: "Manage account",
+  navAccount: "Account",
   signIn: "Sign in",
   signOut: "Sign out",
   join: "Join",
@@ -88,7 +88,7 @@ const en = {
     "Create your member profile to enter competitions. We capture the details required for eligibility, prize fulfilment, and compliance.",
   alreadyMember: "Already a member?",
   membershipLoggedIn:
-    "You are signed in. Update your details any time from Manage account.",
+    "You are signed in. Update your details any time from Account.",
   membershipStandingTitle: "Standing relationship",
   marketingOptOut:
     "Opt out of editorial notes and competition announcements from The Rich Reporter.",
@@ -138,11 +138,11 @@ const en = {
   checkoutSuccessBody:
     "Payment succeeded. Your ticket numbers are secured and a receipt is on its way. Official draw details appear in your confirmation email.",
   checkoutReturn: "Return to collection",
-  checkoutManageAccount: "Manage account",
+  checkoutManageAccount: "Account",
 
   // Account
   accountEyebrow: "Account",
-  accountHeading: "Manage account",
+  accountHeading: "Account",
   accountIntro:
     "Update your membership profile, mailing address, marketing preference, and password.",
   accountProfileHeading: "Profile",
@@ -192,7 +192,7 @@ const en = {
   adminEyebrow: "Private",
   adminHeading: "Admin",
   adminIntro: "Manage competitions, display order, and member enquiries.",
-  adminAccountLink: "Manage account",
+  adminAccountLink: "Account",
 };
 
 export type Dictionary = typeof en;
@@ -243,7 +243,7 @@ const es: Dictionary = {
   navContact: "Contacto",
   navFreeEntry: "Entrada gratis",
   navAdmin: "Admin",
-  navAccount: "Gestionar cuenta",
+  navAccount: "Cuenta",
   signIn: "Entrar",
   signOut: "Salir",
   join: "Unirse",
@@ -270,7 +270,7 @@ const es: Dictionary = {
     "Crea tu perfil de miembro para participar. Recogemos los datos necesarios para elegibilidad, entrega de premios y cumplimiento.",
   alreadyMember: "¿Ya eres miembro?",
   membershipLoggedIn:
-    "Has iniciado sesión. Actualiza tus datos cuando quieras desde Gestionar cuenta.",
+    "Has iniciado sesión. Actualiza tus datos cuando quieras desde Cuenta.",
   membershipStandingTitle: "Relación continua",
   marketingOptOut:
     "Excluirme de notas editoriales y anuncios de competiciones de The Rich Reporter.",
@@ -318,10 +318,10 @@ const es: Dictionary = {
   checkoutSuccessBody:
     "Pago realizado. Tus números de entrada están asegurados y el recibo está en camino. Los detalles del sorteo aparecen en tu correo de confirmación.",
   checkoutReturn: "Volver a la colección",
-  checkoutManageAccount: "Gestionar cuenta",
+  checkoutManageAccount: "Cuenta",
 
   accountEyebrow: "Cuenta",
-  accountHeading: "Gestionar cuenta",
+  accountHeading: "Cuenta",
   accountIntro:
     "Actualiza tu perfil de membresía, dirección postal, preferencia de marketing y contraseña.",
   accountProfileHeading: "Perfil",
@@ -369,7 +369,7 @@ const es: Dictionary = {
   adminEyebrow: "Privado",
   adminHeading: "Admin",
   adminIntro: "Gestiona competiciones, orden de visualización y consultas de miembros.",
-  adminAccountLink: "Gestionar cuenta",
+  adminAccountLink: "Cuenta",
 };
 
 const fr: Dictionary = {
@@ -418,7 +418,7 @@ const fr: Dictionary = {
   navContact: "Contact",
   navFreeEntry: "Entrée gratuite",
   navAdmin: "Admin",
-  navAccount: "Gérer le compte",
+  navAccount: "Compte",
   signIn: "Connexion",
   signOut: "Déconnexion",
   join: "Rejoindre",
@@ -445,7 +445,7 @@ const fr: Dictionary = {
     "Créez votre profil de membre pour participer. Nous recueillons les informations nécessaires à l'éligibilité, à la livraison des prix et à la conformité.",
   alreadyMember: "Déjà membre ?",
   membershipLoggedIn:
-    "Vous êtes connecté. Mettez à jour vos informations à tout moment depuis Gérer le compte.",
+    "Vous êtes connecté. Mettez à jour vos informations à tout moment depuis Compte.",
   membershipStandingTitle: "Relation durable",
   marketingOptOut:
     "Se désinscrire des notes éditoriales et des annonces de concours de The Rich Reporter.",
@@ -493,10 +493,10 @@ const fr: Dictionary = {
   checkoutSuccessBody:
     "Paiement réussi. Vos numéros de billet sont sécurisés et un reçu est en route. Les détails officiels du tirage figurent dans votre e-mail de confirmation.",
   checkoutReturn: "Retour à la collection",
-  checkoutManageAccount: "Gérer le compte",
+  checkoutManageAccount: "Compte",
 
   accountEyebrow: "Compte",
-  accountHeading: "Gérer le compte",
+  accountHeading: "Compte",
   accountIntro:
     "Mettez à jour votre profil d'adhésion, votre adresse postale, votre préférence marketing et votre mot de passe.",
   accountProfileHeading: "Profil",
@@ -544,7 +544,7 @@ const fr: Dictionary = {
   adminEyebrow: "Privé",
   adminHeading: "Admin",
   adminIntro: "Gérez les concours, l'ordre d'affichage et les demandes des membres.",
-  adminAccountLink: "Gérer le compte",
+  adminAccountLink: "Compte",
 };
 
 const de: Dictionary = {
@@ -593,7 +593,7 @@ const de: Dictionary = {
   navContact: "Kontakt",
   navFreeEntry: "Freier Eintrag",
   navAdmin: "Admin",
-  navAccount: "Konto verwalten",
+  navAccount: "Konto",
   signIn: "Anmelden",
   signOut: "Abmelden",
   join: "Beitreten",
@@ -620,7 +620,7 @@ const de: Dictionary = {
     "Erstellen Sie Ihr Mitgliederprofil, um teilzunehmen. Wir erfassen die für Teilnahmeberechtigung, Preisauslieferung und Compliance erforderlichen Angaben.",
   alreadyMember: "Bereits Mitglied?",
   membershipLoggedIn:
-    "Sie sind angemeldet. Aktualisieren Sie Ihre Daten jederzeit unter Konto verwalten.",
+    "Sie sind angemeldet. Aktualisieren Sie Ihre Daten jederzeit unter Konto.",
   membershipStandingTitle: "Dauerhafte Beziehung",
   marketingOptOut:
     "Abmelden von redaktionellen Hinweisen und Wettbewerbsankündigungen von The Rich Reporter.",
@@ -668,10 +668,10 @@ const de: Dictionary = {
   checkoutSuccessBody:
     "Zahlung erfolgreich. Ihre Ticketnummern sind gesichert und eine Quittung ist unterwegs. Offizielle Ziehungdetails stehen in Ihrer Bestätigungs-E-Mail.",
   checkoutReturn: "Zurück zur Kollektion",
-  checkoutManageAccount: "Konto verwalten",
+  checkoutManageAccount: "Konto",
 
   accountEyebrow: "Konto",
-  accountHeading: "Konto verwalten",
+  accountHeading: "Konto",
   accountIntro:
     "Aktualisieren Sie Ihr Mitgliederprofil, Ihre Postadresse, Marketingpräferenz und Ihr Passwort.",
   accountProfileHeading: "Profil",
@@ -719,7 +719,7 @@ const de: Dictionary = {
   adminEyebrow: "Privat",
   adminHeading: "Admin",
   adminIntro: "Verwalten Sie Wettbewerbe, Anzeigereihenfolge und Mitgliederanfragen.",
-  adminAccountLink: "Konto verwalten",
+  adminAccountLink: "Konto",
 };
 
 const pt: Dictionary = {
@@ -768,7 +768,7 @@ const pt: Dictionary = {
   navContact: "Contacto",
   navFreeEntry: "Entrada gratuita",
   navAdmin: "Admin",
-  navAccount: "Gerir conta",
+  navAccount: "Conta",
   signIn: "Entrar",
   signOut: "Sair",
   join: "Juntar-se",
@@ -795,7 +795,7 @@ const pt: Dictionary = {
     "Crie o seu perfil de membro para participar. Recolhemos os dados necessários para elegibilidade, entrega de prémios e conformidade.",
   alreadyMember: "Já é membro?",
   membershipLoggedIn:
-    "Tem sessão iniciada. Atualize os seus dados a qualquer momento em Gerir conta.",
+    "Tem sessão iniciada. Atualize os seus dados a qualquer momento em Conta.",
   membershipStandingTitle: "Relação contínua",
   marketingOptOut:
     "Excluir-me de notas editoriais e anúncios de competições da The Rich Reporter.",
@@ -843,10 +843,10 @@ const pt: Dictionary = {
   checkoutSuccessBody:
     "Pagamento concluído. Os seus números de bilhete estão garantidos e o recibo está a caminho. Os detalhes oficiais do sorteio aparecem no e-mail de confirmação.",
   checkoutReturn: "Voltar à coleção",
-  checkoutManageAccount: "Gerir conta",
+  checkoutManageAccount: "Conta",
 
   accountEyebrow: "Conta",
-  accountHeading: "Gerir conta",
+  accountHeading: "Conta",
   accountIntro:
     "Atualize o perfil de associação, morada postal, preferência de marketing e palavra-passe.",
   accountProfileHeading: "Perfil",
@@ -894,7 +894,7 @@ const pt: Dictionary = {
   adminEyebrow: "Privado",
   adminHeading: "Admin",
   adminIntro: "Faça a gestão de competições, ordem de exibição e pedidos de membros.",
-  adminAccountLink: "Gerir conta",
+  adminAccountLink: "Conta",
 };
 
 const it: Dictionary = {
@@ -943,7 +943,7 @@ const it: Dictionary = {
   navContact: "Contatto",
   navFreeEntry: "Ingresso gratuito",
   navAdmin: "Admin",
-  navAccount: "Gestisci account",
+  navAccount: "Account",
   signIn: "Accedi",
   signOut: "Esci",
   join: "Unisciti",
@@ -970,7 +970,7 @@ const it: Dictionary = {
     "Crea il tuo profilo membro per partecipare. Raccogliamo i dati necessari per idoneità, consegna dei premi e conformità.",
   alreadyMember: "Già membro?",
   membershipLoggedIn:
-    "Hai effettuato l'accesso. Aggiorna i tuoi dati in qualsiasi momento da Gestisci account.",
+    "Hai effettuato l'accesso. Aggiorna i tuoi dati in qualsiasi momento da Account.",
   membershipStandingTitle: "Rapporto continuo",
   marketingOptOut:
     "Escludimi dalle note editoriali e dagli annunci di competizioni di The Rich Reporter.",
@@ -1018,10 +1018,10 @@ const it: Dictionary = {
   checkoutSuccessBody:
     "Pagamento riuscito. I tuoi numeri di biglietto sono assicurati e la ricevuta è in arrivo. I dettagli ufficiali dell'estrazione compaiono nell'e-mail di conferma.",
   checkoutReturn: "Torna alla collezione",
-  checkoutManageAccount: "Gestisci account",
+  checkoutManageAccount: "Account",
 
   accountEyebrow: "Account",
-  accountHeading: "Gestisci account",
+  accountHeading: "Account",
   accountIntro:
     "Aggiorna il profilo di iscrizione, l'indirizzo postale, la preferenza di marketing e la password.",
   accountProfileHeading: "Profilo",
@@ -1069,7 +1069,7 @@ const it: Dictionary = {
   adminEyebrow: "Privato",
   adminHeading: "Admin",
   adminIntro: "Gestisci competizioni, ordine di visualizzazione e richieste dei membri.",
-  adminAccountLink: "Gestisci account",
+  adminAccountLink: "Account",
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {

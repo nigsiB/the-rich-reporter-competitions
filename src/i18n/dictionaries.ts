@@ -1,13 +1,19 @@
-export type Locale = "en" | "es" | "fr";
+export type Locale = "en" | "es" | "fr" | "de" | "pt" | "it";
 
-export const LOCALES: Locale[] = ["en", "es", "fr"];
+export const LOCALES: Locale[] = ["en", "es", "fr", "de", "pt", "it"];
 export const DEFAULT_LOCALE: Locale = "en";
 export const LOCALE_COOKIE = "trr_locale";
+
+/** Primary locales with full copy; others fall back to English for missing keys. */
+export const FULL_LOCALES: Locale[] = ["en", "es"];
 
 export const LOCALE_LABELS: Record<Locale, string> = {
   en: "English",
   es: "Español",
   fr: "Français",
+  de: "Deutsch",
+  pt: "Português",
+  it: "Italiano",
 };
 
 const en = {
@@ -54,6 +60,7 @@ const en = {
   navContact: "Contact",
   navFreeEntry: "Free Entry",
   navAdmin: "Admin",
+  navAccount: "Manage account",
   signIn: "Sign in",
   signOut: "Sign out",
   join: "Join",
@@ -73,6 +80,106 @@ const en = {
   footerTerms: "Terms",
   monthly: "Monthly",
   retailApprox: "Approx. retail",
+
+  // Membership
+  membershipEyebrow: "Membership",
+  membershipHeading: "Join the circle",
+  membershipIntro:
+    "Create your member profile to enter competitions. We capture the details required for eligibility, prize fulfilment, and compliance.",
+  alreadyMember: "Already a member?",
+  membershipLoggedIn:
+    "You are signed in. Update your details any time from Manage account.",
+  membershipStandingTitle: "Standing relationship",
+  marketingOptOut:
+    "Opt out of editorial notes and competition announcements from The Rich Reporter.",
+  marketingOptOutHint: "Leave unchecked to stay on our list. Check only if you prefer not to receive emails.",
+
+  // Login
+  loginEyebrow: "Members",
+  loginHeading: "Sign in",
+  loginIntro: "Access your membership to secure competition entries.",
+  loginNewHere: "New here?",
+  loginApply: "Apply for membership",
+  signingIn: "Signing in…",
+
+  // Contact
+  contactEyebrow: "Desk",
+  contactHeading: "Contact us",
+  contactIntro:
+    "Questions about membership, fulfilment, or Alternative Method of Entry — write to the competitions desk. We respond with discretion.",
+
+  // AMOE
+  amoeLegalEyebrow: "Legal · United States",
+  amoeHeading: "Alternative Method of Entry",
+  amoeBody:
+    "No purchase is necessary to enter or win. Download a free mail-in entry form for any active competition, complete it by hand, and post it to the address on the form. Limit one free entry request per outer envelope, unless official rules state otherwise. Void where prohibited.",
+  amoeDownload: "Download mail-in form",
+  amoeIndexEyebrow: "AMOE",
+  amoeIndexHeading: "Free mail-in entry",
+  amoeIndexIntro: "Select a competition to open a printable mail-in form. No purchase necessary.",
+  amoeFormLabel: "Form",
+
+  // Checkout success
+  checkoutConfirmed: "Confirmed",
+  checkoutEntered: "You are entered",
+  checkoutSuccessBody:
+    "Payment succeeded. Your ticket numbers are secured and a receipt is on its way. Official draw details appear in your confirmation email.",
+  checkoutReturn: "Return to collection",
+  checkoutManageAccount: "Manage account",
+
+  // Account
+  accountEyebrow: "Account",
+  accountHeading: "Manage account",
+  accountIntro:
+    "Update your membership profile, mailing address, marketing preference, and password.",
+  accountProfileHeading: "Profile",
+  accountAddressHeading: "Mailing address",
+  accountPasswordHeading: "Change password",
+  accountFullName: "Full name",
+  accountEmail: "Email",
+  accountEmailHint: "Email cannot be changed here. To update it, please",
+  accountPhone: "Phone",
+  accountDob: "Date of birth",
+  accountAddress1: "Address line 1",
+  accountAddress2: "Address line 2",
+  accountCity: "City",
+  accountState: "State / Province / Region",
+  accountPostal: "ZIP / Postal code",
+  accountCountry: "Country",
+  accountMarketing:
+    "Opt out of editorial notes and competition announcements from The Rich Reporter.",
+  accountMarketingHint:
+    "Leave unchecked to stay on our list. Check only if you prefer not to receive emails.",
+  accountSaveProfile: "Save profile",
+  accountSaving: "Saving…",
+  accountProfileSaved: "Your profile has been updated.",
+  accountCurrentPassword: "Current password",
+  accountNewPassword: "New password",
+  accountConfirmPassword: "Confirm new password",
+  accountPasswordHint: "Minimum 8 characters",
+  accountChangePassword: "Update password",
+  accountUpdatingPassword: "Updating…",
+  accountPasswordSaved: "Your password has been updated.",
+  accountSignOutHint: "Sign out of your membership on this device.",
+  accountAdminNote: "You have admin access.",
+
+  // Legal stubs
+  legalPrivacyTitle: "Privacy Policy",
+  legalTermsTitle: "Terms of Use",
+  legalRulesTitle: "Official Rules",
+  legalLastUpdated: "Last updated: July 2026",
+  legalPrivacyStub:
+    "We collect account and entry details to operate competitions, fulfill prizes, and respond to enquiries. Marketing messages are sent only when you have not opted out.",
+  legalTermsStub:
+    "By using this site you agree to the official rules for each competition and to eligible participation requirements, including being 18 or older.",
+  legalRulesStub:
+    "No purchase necessary. Alternative Method of Entry available. Void where prohibited. Full rules govern all draws.",
+
+  // Admin chrome
+  adminEyebrow: "Private",
+  adminHeading: "Admin",
+  adminIntro: "Manage competitions, display order, and member enquiries.",
+  adminAccountLink: "Manage account",
 };
 
 export type Dictionary = typeof en;
@@ -123,6 +230,7 @@ const es: Dictionary = {
   navContact: "Contacto",
   navFreeEntry: "Entrada gratis",
   navAdmin: "Admin",
+  navAccount: "Gestionar cuenta",
   signIn: "Entrar",
   signOut: "Salir",
   join: "Unirse",
@@ -142,79 +250,205 @@ const es: Dictionary = {
   footerTerms: "Términos",
   monthly: "Mensual",
   retailApprox: "Valor aprox.",
+
+  membershipEyebrow: "Membresía",
+  membershipHeading: "Únete al círculo",
+  membershipIntro:
+    "Crea tu perfil de miembro para participar. Recogemos los datos necesarios para elegibilidad, entrega de premios y cumplimiento.",
+  alreadyMember: "¿Ya eres miembro?",
+  membershipLoggedIn:
+    "Has iniciado sesión. Actualiza tus datos cuando quieras desde Gestionar cuenta.",
+  membershipStandingTitle: "Relación continua",
+  marketingOptOut:
+    "Excluirme de notas editoriales y anuncios de competiciones de The Rich Reporter.",
+  marketingOptOutHint:
+    "Déjalo sin marcar para seguir en la lista. Márcalo solo si no deseas recibir correos.",
+
+  loginEyebrow: "Miembros",
+  loginHeading: "Entrar",
+  loginIntro: "Accede a tu membresía para asegurar entradas a las competiciones.",
+  loginNewHere: "¿Nuevo aquí?",
+  loginApply: "Solicitar membresía",
+  signingIn: "Entrando…",
+
+  contactEyebrow: "Mesa",
+  contactHeading: "Contáctanos",
+  contactIntro:
+    "Preguntas sobre membresía, entrega o el Método alternativo de entrada — escribe a la mesa de competiciones. Respondemos con discreción.",
+
+  amoeLegalEyebrow: "Legal · Estados Unidos",
+  amoeHeading: "Método alternativo de entrada",
+  amoeBody:
+    "No es necesario comprar para participar o ganar. Descarga un formulario gratuito de entrada por correo para cualquier competición activa, complétalo a mano y envíalo a la dirección del formulario. Límite de una solicitud gratuita por sobre exterior, salvo que las reglas oficiales indiquen lo contrario. Nulo donde esté prohibido.",
+  amoeDownload: "Descargar formulario",
+  amoeIndexEyebrow: "AMOE",
+  amoeIndexHeading: "Entrada gratuita por correo",
+  amoeIndexIntro:
+    "Selecciona una competición para abrir un formulario imprimible. No es necesario comprar.",
+  amoeFormLabel: "Formulario",
+
+  checkoutConfirmed: "Confirmado",
+  checkoutEntered: "Estás inscrito",
+  checkoutSuccessBody:
+    "Pago realizado. Tus números de entrada están asegurados y el recibo está en camino. Los detalles del sorteo aparecen en tu correo de confirmación.",
+  checkoutReturn: "Volver a la colección",
+  checkoutManageAccount: "Gestionar cuenta",
+
+  accountEyebrow: "Cuenta",
+  accountHeading: "Gestionar cuenta",
+  accountIntro:
+    "Actualiza tu perfil de membresía, dirección postal, preferencia de marketing y contraseña.",
+  accountProfileHeading: "Perfil",
+  accountAddressHeading: "Dirección postal",
+  accountPasswordHeading: "Cambiar contraseña",
+  accountFullName: "Nombre completo",
+  accountEmail: "Correo",
+  accountEmailHint: "El correo no se puede cambiar aquí. Para actualizarlo,",
+  accountPhone: "Teléfono",
+  accountDob: "Fecha de nacimiento",
+  accountAddress1: "Dirección línea 1",
+  accountAddress2: "Dirección línea 2",
+  accountCity: "Ciudad",
+  accountState: "Estado / Provincia / Región",
+  accountPostal: "Código postal",
+  accountCountry: "País",
+  accountMarketing:
+    "Excluirme de notas editoriales y anuncios de competiciones de The Rich Reporter.",
+  accountMarketingHint:
+    "Déjalo sin marcar para seguir en la lista. Márcalo solo si no deseas recibir correos.",
+  accountSaveProfile: "Guardar perfil",
+  accountSaving: "Guardando…",
+  accountProfileSaved: "Tu perfil ha sido actualizado.",
+  accountCurrentPassword: "Contraseña actual",
+  accountNewPassword: "Nueva contraseña",
+  accountConfirmPassword: "Confirmar nueva contraseña",
+  accountPasswordHint: "Mínimo 8 caracteres",
+  accountChangePassword: "Actualizar contraseña",
+  accountUpdatingPassword: "Actualizando…",
+  accountPasswordSaved: "Tu contraseña ha sido actualizada.",
+  accountSignOutHint: "Cierra sesión de tu membresía en este dispositivo.",
+  accountAdminNote: "Tienes acceso de administrador.",
+
+  legalPrivacyTitle: "Política de privacidad",
+  legalTermsTitle: "Términos de uso",
+  legalRulesTitle: "Reglas oficiales",
+  legalLastUpdated: "Última actualización: julio 2026",
+  legalPrivacyStub:
+    "Recopilamos datos de cuenta y entradas para operar competiciones, entregar premios y responder consultas. Los mensajes de marketing se envían solo si no te has excluido.",
+  legalTermsStub:
+    "Al usar este sitio aceptas las reglas oficiales de cada competición y los requisitos de elegibilidad, incluido ser mayor de 18 años.",
+  legalRulesStub:
+    "No es necesario comprar. Método alternativo de entrada disponible. Nulo donde esté prohibido. Las reglas completas rigen todos los sorteos.",
+
+  adminEyebrow: "Privado",
+  adminHeading: "Admin",
+  adminIntro: "Gestiona competiciones, orden de visualización y consultas de miembros.",
+  adminAccountLink: "Gestionar cuenta",
 };
 
-const fr: Dictionary = {
-  membersOnly: "Membres uniquement",
-  heroHeadline: "Discrètement plus riche",
-  heroSub:
-    "Compétitions privées pour lecteurs exigeants — tech emblématique, prestige éditorial et espèces avec discrétion.",
-  viewCollection: "Voir la collection",
-  becomeMember: "Devenir membre",
-  competitionsEyebrow: "Collection actuelle",
-  competitionsHeading: "Tirages exclusifs",
-  competitionsIntro:
-    "Cinq prix sélectionnés. Entrée à vingt-cinq cents. Livraison mondiale des gagnants.",
-  howItWorks: "Comment ça marche",
-  howHeading: "Une invitation, pas une course",
-  step1Title: "Choisissez un prix",
-  step1Body: "Sélectionnez dans notre collection limitée. Chaque tirage a un plafond d’entrées.",
-  step2Title: "Sécurisez vos entrées",
-  step2Body: "Les billets sont réservés dès le paiement — sans double réservation.",
-  step3Title: "Attendez le tirage",
-  step3Body:
-    "Les gagnants sont tirés au sort après la date indiquée. Les règles officielles s’appliquent.",
-  buyTickets: "Acheter des billets",
-  enterNow: "Participer",
-  securing: "Réservation…",
-  entries: "Entrées",
-  total: "Total",
-  each: "chacun",
-  perEntry: "par entrée",
-  limitedTo: "Limité à",
-  entriesWord: "entrées",
-  liveInventory: "Inventaire en direct",
-  chooseQty: "choisissez de 1 à 1 000 ci-dessous",
-  cashAlternative: "Alternative en espèces",
-  cashAltLine:
-    "Le gagnant peut choisir une alternative en espèces exonérée d’environ {amount} à la place du prix.",
-  worldwide:
-    "Nous livrons les prix dans le monde entier — où que soit le gagnant. Expédition par The Rich Reporter.",
-  backCollection: "← Collection",
-  noPurchase: "Aucun achat nécessaire. Voir",
-  amoe: "Méthode alternative d’entrée",
-  and: "et",
-  officialRules: "Règles officielles",
+/** Partial overlays for tertiary locales — missing keys fall back to English. */
+const frPartial: Partial<Dictionary> = {
+  language: "Langue",
   navCompetitions: "Compétitions",
   navMembership: "Adhésion",
   navContact: "Contact",
   navFreeEntry: "Entrée gratuite",
-  navAdmin: "Admin",
+  navAccount: "Gérer le compte",
   signIn: "Connexion",
   signOut: "Déconnexion",
   join: "Rejoindre",
   enter: "Participer",
-  loginRequired: "Connectez-vous pour acheter",
-  loginRequiredBody:
-    "L’adhésion est requise avant le paiement. Vous reviendrez ici après connexion.",
-  monthlyClub: "Cercle Patron",
-  monthlyClubBody:
-    "Un abonnement mensuel pour les lecteurs qui préfèrent une relation durable avec le magazine — paiements internationaux sécurisés via Stripe.",
-  subscribeMonthly: "S’abonner mensuellement",
-  language: "Langue",
-  footerBlurb:
-    "Compétitions exclusives pour les membres du magazine. Aucun achat nécessaire — voir la Méthode alternative d’entrée.",
-  footerRules: "Règles",
+  membersOnly: "Membres uniquement",
+  heroHeadline: "Discrètement plus riche",
+  viewCollection: "Voir la collection",
+  becomeMember: "Devenir membre",
   footerPrivacy: "Confidentialité",
   footerTerms: "Conditions",
-  monthly: "Mensuel",
-  retailApprox: "Valeur approx.",
+  footerRules: "Règles",
 };
 
-export const dictionaries: Record<Locale, Dictionary> = { en, es, fr };
+const dePartial: Partial<Dictionary> = {
+  language: "Sprache",
+  navCompetitions: "Wettbewerbe",
+  navMembership: "Mitgliedschaft",
+  navContact: "Kontakt",
+  navFreeEntry: "Freier Eintrag",
+  navAccount: "Konto verwalten",
+  signIn: "Anmelden",
+  signOut: "Abmelden",
+  join: "Beitreten",
+  enter: "Teilnehmen",
+  membersOnly: "Nur für Mitglieder",
+  heroHeadline: "Leise reicher",
+  viewCollection: "Kollektion ansehen",
+  becomeMember: "Mitglied werden",
+  footerPrivacy: "Datenschutz",
+  footerTerms: "Bedingungen",
+  footerRules: "Regeln",
+};
+
+const ptPartial: Partial<Dictionary> = {
+  language: "Idioma",
+  navCompetitions: "Competições",
+  navMembership: "Associação",
+  navContact: "Contacto",
+  navFreeEntry: "Entrada gratuita",
+  navAccount: "Gerir conta",
+  signIn: "Entrar",
+  signOut: "Sair",
+  join: "Juntar-se",
+  enter: "Participar",
+  membersOnly: "Só membros",
+  heroHeadline: "Discretamente mais rico",
+  viewCollection: "Ver coleção",
+  becomeMember: "Tornar-se membro",
+  footerPrivacy: "Privacidade",
+  footerTerms: "Termos",
+  footerRules: "Regras",
+};
+
+const itPartial: Partial<Dictionary> = {
+  language: "Lingua",
+  navCompetitions: "Competizioni",
+  navMembership: "Iscrizione",
+  navContact: "Contatto",
+  navFreeEntry: "Ingresso gratuito",
+  navAccount: "Gestisci account",
+  signIn: "Accedi",
+  signOut: "Esci",
+  join: "Unisciti",
+  enter: "Partecipa",
+  membersOnly: "Solo membri",
+  heroHeadline: "Discretamente più ricco",
+  viewCollection: "Vedi collezione",
+  becomeMember: "Diventa membro",
+  footerPrivacy: "Privacy",
+  footerTerms: "Termini",
+  footerRules: "Regole",
+};
+
+function withFallback(partial: Partial<Dictionary>): Dictionary {
+  return { ...en, ...partial };
+}
+
+export const dictionaries: Record<Locale, Dictionary> = {
+  en,
+  es,
+  fr: withFallback(frPartial),
+  de: withFallback(dePartial),
+  pt: withFallback(ptPartial),
+  it: withFallback(itPartial),
+};
 
 export function isLocale(value: string | undefined | null): value is Locale {
-  return value === "en" || value === "es" || value === "fr";
+  return (
+    value === "en" ||
+    value === "es" ||
+    value === "fr" ||
+    value === "de" ||
+    value === "pt" ||
+    value === "it"
+  );
 }
 
 export function t(

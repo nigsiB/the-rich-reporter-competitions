@@ -19,6 +19,8 @@ export default function MembershipForm() {
     setSuccess("");
 
     const form = new FormData(e.currentTarget);
+    // Opt-out checkbox: unchecked = stay opted in (default true).
+    const optedOut = form.get("marketingOptOut") === "on";
     const result = await signUpMemberAction({
       email: String(form.get("email") ?? ""),
       password: String(form.get("password") ?? ""),
@@ -31,7 +33,7 @@ export default function MembershipForm() {
       postalCode: String(form.get("postalCode") ?? ""),
       country: String(form.get("country") ?? ""),
       dateOfBirth: String(form.get("dateOfBirth") ?? ""),
-      marketingOptIn: form.get("marketingOptIn") === "on",
+      marketingOptIn: !optedOut,
     });
 
     setLoading(false);
@@ -196,16 +198,21 @@ export default function MembershipForm() {
         </div>
       </fieldset>
 
-      <label className="flex items-start gap-3 text-sm text-[var(--muted)]">
-        <input
-          type="checkbox"
-          name="marketingOptIn"
-          className="mt-1 accent-[var(--champagne)]"
-        />
-        <span>
-          Send me editorial notes and new competition announcements from The Rich Reporter.
-        </span>
-      </label>
+      <div className="space-y-2">
+        <label className="flex items-start gap-3 text-sm text-[var(--muted)]">
+          <input
+            type="checkbox"
+            name="marketingOptOut"
+            className="mt-1 accent-[var(--champagne)]"
+          />
+          <span>
+            Opt out of editorial notes and competition announcements from The Rich Reporter.
+          </span>
+        </label>
+        <p className="pl-7 text-xs leading-relaxed text-[var(--muted)]/80">
+          Leave unchecked to stay on our list. Check only if you prefer not to receive emails.
+        </p>
+      </div>
 
       <p className="text-xs leading-relaxed text-[var(--muted)]">
         By joining you confirm you are 18+, a legal resident of an eligible jurisdiction, and agree

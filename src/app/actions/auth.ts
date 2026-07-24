@@ -4,8 +4,14 @@ import { createClient } from "@/utils/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { recordMarketingEmail } from "@/lib/marketing";
 import { DEFAULT_COUNTRY_CODE, isValidCountryCode } from "@/data/countries";
-import type { ActionResult, MembershipSignupInput } from "@/lib/types";
+import type {
+  ActionResult,
+  ChangePasswordInput,
+  MembershipSignupInput,
+  ProfileUpdateInput,
+} from "@/lib/types";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 function yearsOld(dateOfBirth: string): number {
   const dob = new Date(dateOfBirth);
@@ -219,4 +225,130 @@ export async function getSessionProfile() {
     .single();
 
   return { user, profile };
+}
+
+export async function updateProfileAction(
+  input: ProfileUpdateInput,
+): Promise<ActionResult> {
+  if (!isSupabaseConfigured()) {
+    return {
+      success: false,
+      error: "Account updates are not connected yet. Add Supabase credentials to enable this.",
+    };
+  }
+
+  if (!input.fullName.trim()) {
+    return { success: false, error: "Please enter your full name." };
+  }
+  if (!input.phone.trim()) {
+    return { success: false, error: "Please enter your phone number." };
+  }
+  if (!input.addressLine1 || !input.city || !input.state || !input.postalCode) {
+    return { success: false, error: "Please complete your mailing address." };
+  }
+  if (!input.country || !isValidCountryCode(input.country)) {
+    return { success: false, error: "Please select your country." };
+  }
+
+  const hasDob = Boolean(input.dateOfBirth?.trim());
+  if (hasDob && yearsOld(input.dateOfBirth!) < 18) {
+    return { success: false, error: "You must be 18 or older to remain a member." };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false, error: "Please sign in to update your account." };
+  }
+
+  const country = input.country.toUpperCase();
+  const payload: Record<string, unknown> = {
+    full_name: input.fullName.trim(),
+    phone: input.phone.trim(),
+    address_line1: input.addressLine1.trim(),
+    address_line2: input.addressLine2?.trim() || null,
+    city: input.city.trim(),
+    state: input.state.trim(),
+    postal_code: input.postalCode.trim(),
+    country,
+    marketing_opt_in: input.marketingOptIn,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (hasDob) {
+    payload.date_of_birth = input.dateOfBirth!.trim();
+  }
+
+  const { error } = await supabase.from("profiles").update(payload).eq("id", user.id);
+
+  if (error) {
+    console.error("[updateProfile]", error.message);
+    return { success: false, error: "Unable to save your profile. Please try again." };
+  }
+
+  await recordMarketingEmail({
+    email: user.email ?? "",
+    fullName: input.fullName,
+    source: "signup",
+    optedIn: input.marketingOptIn,
+  });
+
+  revalidatePath("/account");
+  return { success: true, message: "Your profile has been updated." };
+}
+
+export async function changePasswordAction(
+  input: ChangePasswordInput,
+): Promise<ActionResult> {
+  if (!isSupabaseConfigured()) {
+    return {
+      success: false,
+      error: "Password changes are not connected yet. Add Supabase credentials to enable this.",
+    };
+  }
+
+  if (!input.currentPassword) {
+    return { success: false, error: "Please enter your current password." };
+  }
+  if (!input.newPassword || input.newPassword.length < 8) {
+    return { success: false, error: "New password must be at least 8 characters." };
+  }
+  if (input.newPassword !== input.confirmPassword) {
+    return { success: false, error: "New password and confirmation do not match." };
+  }
+  if (input.currentPassword === input.newPassword) {
+    return { success: false, error: "New password must be different from your current password." };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user?.email) {
+    return { success: false, error: "Please sign in to change your password." };
+  }
+
+  const { error: verifyError } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: input.currentPassword,
+  });
+
+  if (verifyError) {
+    return { success: false, error: "Current password is incorrect." };
+  }
+
+  const { error } = await supabase.auth.updateUser({
+    password: input.newPassword,
+  });
+
+  if (error) {
+    console.error("[changePassword]", error.message);
+    return { success: false, error: error.message || "Unable to update password." };
+  }
+
+  return { success: true, message: "Your password has been updated." };
 }

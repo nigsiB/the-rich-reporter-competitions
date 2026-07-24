@@ -2,12 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
+import { setLocaleAction } from "@/i18n/setLocale";
 import {
   LOCALE_COOKIE,
   LOCALE_LABELS,
   LOCALES,
   type Locale,
 } from "@/i18n/dictionaries";
+import { fieldClass } from "@/components/formStyles";
 
 type LanguageSwitcherProps = {
   locale: Locale;
@@ -18,41 +20,43 @@ export default function LanguageSwitcher({ locale, label }: LanguageSwitcherProp
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
-  const setLocale = (next: Locale) => {
-    if (next === locale) return;
-    document.cookie = `${LOCALE_COOKIE}=${next};path=/;max-age=${60 * 60 * 24 * 365};samesite=lax`;
-    startTransition(() => {
+  const onChange = (next: string) => {
+    if (!LOCALES.includes(next as Locale) || next === locale) return;
+
+    // Mirror for client-side persistence / diagnostics (server cookie is source of truth).
+    try {
+      localStorage.setItem(LOCALE_COOKIE, next);
+    } catch {
+      /* ignore */
+    }
+
+    startTransition(async () => {
+      await setLocaleAction(next);
       router.refresh();
     });
   };
 
   return (
-    <div
-      className="relative inline-flex items-center rounded-sm border border-[var(--border)] bg-[var(--bg-elevated)]/80 p-0.5 backdrop-blur-sm"
-      role="group"
-      aria-label={label}
-    >
+    <label className="relative inline-flex items-center gap-2">
       <span className="sr-only">{label}</span>
-      {LOCALES.map((code) => {
-        const active = locale === code;
-        return (
-          <button
-            key={code}
-            type="button"
-            disabled={pending}
-            onClick={() => setLocale(code)}
-            aria-pressed={active}
-            title={LOCALE_LABELS[code]}
-            className={`relative min-w-[2.25rem] px-2.5 py-1.5 text-[9px] font-medium uppercase tracking-[0.22em] transition-all duration-400 ${
-              active
-                ? "bg-[var(--champagne)]/15 text-[var(--champagne)] shadow-[inset_0_0_0_1px_rgba(212,175,120,0.35)]"
-                : "text-[var(--muted)] hover:text-[var(--fg)]"
-            } disabled:opacity-50`}
-          >
-            {code}
-          </button>
-        );
-      })}
-    </div>
+      <select
+        aria-label={label}
+        value={locale}
+        disabled={pending}
+        onChange={(e) => onChange(e.target.value)}
+        className={`${fieldClass} w-auto min-w-[8.5rem] cursor-pointer appearance-none bg-[var(--bg-elevated)] py-2 pr-8 text-[10px] uppercase tracking-[0.18em] disabled:opacity-50`}
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%238a8680' stroke-width='1.2'/%3E%3C/svg%3E")`,
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "right 0.65rem center",
+        }}
+      >
+        {LOCALES.map((code) => (
+          <option key={code} value={code}>
+            {LOCALE_LABELS[code]}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }

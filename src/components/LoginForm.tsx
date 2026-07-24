@@ -3,7 +3,6 @@
 import { useState, type FormEvent } from "react";
 import { signInAction } from "@/app/actions/auth";
 import { fieldClass, labelClass, primaryBtnClass } from "@/components/formStyles";
-import Link from "next/link";
 
 type LoginFormProps = {
   nextPath?: string;
@@ -65,13 +64,6 @@ export default function LoginForm({ nextPath = "/" }: LoginFormProps) {
       <button type="submit" disabled={loading} className={primaryBtnClass}>
         {loading ? "Signing in…" : "Sign in"}
       </button>
-
-      <p className="text-sm text-[var(--muted)]">
-        New here?{" "}
-        <Link href="/membership" className="text-[var(--champagne)] underline-offset-4 hover:underline">
-          Apply for membership
-        </Link>
-      </p>
     </form>
   );
 }

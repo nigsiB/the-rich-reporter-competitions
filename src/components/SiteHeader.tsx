@@ -41,17 +41,25 @@ export default async function SiteHeader() {
           ) : null}
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <LanguageSwitcher locale={locale} label={dict.language} />
           {user ? (
-            <form action={signOutAction}>
-              <button
-                type="submit"
-                className="text-[10px] uppercase tracking-[0.24em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)]"
+            <>
+              <Link
+                href="/account"
+                className="hidden text-[10px] uppercase tracking-[0.24em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)] sm:inline"
               >
-                {dict.signOut}
-              </button>
-            </form>
+                {dict.navAccount}
+              </Link>
+              <form action={signOutAction}>
+                <button
+                  type="submit"
+                  className="text-[10px] uppercase tracking-[0.24em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)]"
+                >
+                  {dict.signOut}
+                </button>
+              </form>
+            </>
           ) : (
             <Link
               href="/login"

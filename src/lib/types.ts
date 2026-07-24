@@ -13,6 +13,25 @@ export type MembershipSignupInput = {
   marketingOptIn: boolean;
 };
 
+export type ProfileUpdateInput = {
+  fullName: string;
+  phone: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  dateOfBirth?: string;
+  marketingOptIn: boolean;
+};
+
+export type ChangePasswordInput = {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+};
+
 export type ContactInput = {
   fullName: string;
   email: string;

@@ -21,6 +21,9 @@ export default async function SiteFooter() {
           <Link href="/membership" className="transition-colors hover:text-[var(--champagne)]">
             {dict.navMembership}
           </Link>
+          <Link href="/account" className="transition-colors hover:text-[var(--champagne)]">
+            {dict.navAccount}
+          </Link>
           <Link href="/contact" className="transition-colors hover:text-[var(--champagne)]">
             {dict.navContact}
           </Link>

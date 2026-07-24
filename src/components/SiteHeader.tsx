@@ -8,7 +8,9 @@ import Link from "next/link";
 const linkClass =
   "text-[10px] uppercase tracking-[0.28em] text-[var(--muted)] transition-colors duration-300 hover:text-[var(--champagne)]";
 const utilityClass =
-  "text-[10px] uppercase tracking-[0.24em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)]";
+  "inline-flex items-center leading-none text-[10px] uppercase tracking-[0.24em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)]";
+const utilityButtonClass =
+  `${utilityClass} cursor-pointer border-0 bg-transparent p-0 font-[inherit]`;
 const mobileLinkClass =
   "block py-2.5 text-[11px] uppercase tracking-[0.28em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)]";
 
@@ -70,18 +72,18 @@ export default async function SiteHeader() {
     <>
       {user ? (
         <>
-          <Link href="/account" className={`${utilityClass} hidden sm:inline`}>
+          <Link href="/account" className={`${utilityClass} hidden sm:inline-flex`}>
             {dict.navAccount}
           </Link>
-          <form action={signOutAction}>
-            <button type="submit" className={utilityClass}>
+          <form action={signOutAction} className="m-0 inline-flex items-center">
+            <button type="submit" className={utilityButtonClass}>
               {dict.signOut}
             </button>
           </form>
         </>
       ) : (
         <>
-          <Link href="/login" className={`${utilityClass} hidden sm:inline`}>
+          <Link href="/login" className={`${utilityClass} hidden sm:inline-flex`}>
             {dict.signIn}
           </Link>
           <Link href="/membership" className={utilityClass}>

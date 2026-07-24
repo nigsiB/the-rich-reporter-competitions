@@ -9,7 +9,6 @@ import {
   LOCALES,
   type Locale,
 } from "@/i18n/dictionaries";
-import { fieldClass } from "@/components/formStyles";
 
 type LanguageSwitcherProps = {
   locale: Locale;
@@ -44,7 +43,7 @@ export default function LanguageSwitcher({ locale, label }: LanguageSwitcherProp
         value={locale}
         disabled={pending}
         onChange={(e) => onChange(e.target.value)}
-        className={`${fieldClass} w-auto min-w-[8.5rem] cursor-pointer appearance-none bg-[var(--bg-elevated)] py-2 pr-8 text-[10px] uppercase tracking-[0.18em] disabled:opacity-50`}
+        className="inline-flex h-8 w-auto min-w-[8.5rem] cursor-pointer appearance-none border border-[var(--border)] bg-[var(--bg-elevated)] px-3 pr-8 text-[10px] uppercase leading-none tracking-[0.18em] text-[var(--fg)] outline-none transition-colors focus:border-[var(--champagne)]/60 disabled:opacity-50"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%238a8680' stroke-width='1.2'/%3E%3C/svg%3E")`,
           backgroundRepeat: "no-repeat",

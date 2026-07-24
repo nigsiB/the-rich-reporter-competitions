@@ -28,7 +28,11 @@ INSERT INTO competitions (
     1500.00,
     NOW() + INTERVAL '30 days',
     'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?auto=format&fit=crop&q=85&w=1200',
-    '{}'::text[],
+    ARRAY[
+      'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=85&w=1200',
+      'https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?auto=format&fit=crop&q=85&w=1200',
+      'https://images.unsplash.com/photo-1455849318743-b2233052fcff?auto=format&fit=crop&q=85&w=1200'
+    ]::text[],
     1,
     'active',
     true
@@ -43,7 +47,11 @@ INSERT INTO competitions (
     1000.00,
     NOW() + INTERVAL '28 days',
     'https://images.unsplash.com/photo-1716782494065-e9268365ef9f?auto=format&fit=crop&q=85&w=1200',
-    '{}'::text[],
+    ARRAY[
+      'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?auto=format&fit=crop&q=85&w=1200',
+      'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&q=85&w=1200',
+      'https://images.unsplash.com/photo-1607863680198-23d4b2565df0?auto=format&fit=crop&q=85&w=1200'
+    ]::text[],
     2,
     'active',
     false
@@ -59,7 +67,9 @@ INSERT INTO competitions (
     NOW() + INTERVAL '35 days',
     'https://images.unsplash.com/photo-1762512949121-c1fc05b36e1a?auto=format&fit=crop&q=85&w=1200',
     ARRAY[
-      'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&q=85&w=1200'
+      'https://images.unsplash.com/photo-1759588071847-6ba0f3dbd16e?auto=format&fit=crop&q=85&w=1200',
+      'https://images.unsplash.com/photo-1758467700508-1de0ab755248?auto=format&fit=crop&q=85&w=1200',
+      'https://images.unsplash.com/photo-1758186361602-c3f23037eb95?auto=format&fit=crop&q=85&w=1200'
     ]::text[],
     3,
     'active',
@@ -75,7 +85,11 @@ INSERT INTO competitions (
     849.00,
     NOW() + INTERVAL '32 days',
     'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&q=85&w=1200',
-    '{}'::text[],
+    ARRAY[
+      'https://images.unsplash.com/photo-1561154464-82e9adf32764?auto=format&fit=crop&q=85&w=1200',
+      'https://images.unsplash.com/photo-1585790050230-5dd28404ccb9?auto=format&fit=crop&q=85&w=1200',
+      'https://images.unsplash.com/photo-1542759564-7ccbb6ac450a?auto=format&fit=crop&q=85&w=1200'
+    ]::text[],
     4,
     'active',
     false
@@ -90,7 +104,11 @@ INSERT INTO competitions (
     1299.00,
     NOW() + INTERVAL '40 days',
     'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=85&w=1200',
-    '{}'::text[],
+    ARRAY[
+      'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&q=85&w=1200',
+      'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?auto=format&fit=crop&q=85&w=1200',
+      'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&q=85&w=1200'
+    ]::text[],
     5,
     'active',
     false

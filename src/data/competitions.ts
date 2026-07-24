@@ -78,7 +78,10 @@ export const competitions: Competition[] = [
     retailValue: 1200,
     drawDate: daysFromNow(35),
     imageUrl:
+      "https://images.unsplash.com/photo-1762512949121-c1fc05b36e1a?auto=format&fit=crop&q=85&w=1200&sat=-30&bri=-20",
+    galleryUrls: [
       "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&q=85&w=1200&sat=-35&bri=-25",
+    ],
     displayOrder: 3,
     status: "active",
   },

@@ -13,6 +13,7 @@ INSERT INTO competitions (
     retail_value,
     draw_date,
     image_url,
+    gallery_urls,
     display_order,
     status,
     is_monthly
@@ -27,6 +28,7 @@ INSERT INTO competitions (
     1500.00,
     NOW() + INTERVAL '30 days',
     'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?auto=format&fit=crop&q=85&w=1200&sat=-25&bri=-15',
+    '{}'::text[],
     1,
     'active',
     true
@@ -41,6 +43,7 @@ INSERT INTO competitions (
     1000.00,
     NOW() + INTERVAL '28 days',
     'https://images.unsplash.com/photo-1716782494065-e9268365ef9f?auto=format&fit=crop&q=85&w=1200&sat=-20&bri=-15',
+    '{}'::text[],
     2,
     'active',
     false
@@ -54,7 +57,10 @@ INSERT INTO competitions (
     1000.00,
     1200.00,
     NOW() + INTERVAL '35 days',
-    'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&q=85&w=1200&sat=-35&bri=-25',
+    'https://images.unsplash.com/photo-1762512949121-c1fc05b36e1a?auto=format&fit=crop&q=85&w=1200&sat=-30&bri=-20',
+    ARRAY[
+      'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&q=85&w=1200&sat=-35&bri=-25'
+    ]::text[],
     3,
     'active',
     false
@@ -69,6 +75,7 @@ INSERT INTO competitions (
     849.00,
     NOW() + INTERVAL '32 days',
     'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&q=85&w=1200&sat=-30&bri=-20',
+    '{}'::text[],
     4,
     'active',
     false
@@ -83,6 +90,7 @@ INSERT INTO competitions (
     1299.00,
     NOW() + INTERVAL '40 days',
     'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=85&w=1200&sat=-40&bri=-25',
+    '{}'::text[],
     5,
     'active',
     false

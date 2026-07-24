@@ -68,13 +68,18 @@ export async function signUpMemberAction(
 
   const supabase = await createClient();
   const country = input.country.toUpperCase();
+  const siteUrl = (
+    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+  ).replace(/\/$/, "");
 
   // Pass full profile via raw_user_meta_data so handle_new_user can INSERT
   // even when email confirmation leaves the client without a session (auth.uid() null).
+  // emailRedirectTo must match Supabase Auth Site URL / redirect allow list (production).
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email: input.email.trim(),
     password: input.password,
     options: {
+      emailRedirectTo: `${siteUrl}/login`,
       data: {
         full_name: input.fullName.trim(),
         phone: input.phone.trim(),

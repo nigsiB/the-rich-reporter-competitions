@@ -8,9 +8,13 @@
    - `anon` / `publishable` key → `NEXT_PUBLIC_SUPABASE_ANON_KEY` (JWT `eyJ…` or `sb_publishable_…`)
    - `service_role` / `secret` key → `SUPABASE_SERVICE_ROLE_KEY` (server only — JWT `eyJ…` or `sb_secret_…`, **not** the Postgres connection string)
 3. **Authentication → Providers → Email** — enable
-4. **Authentication → URL Configuration**
+4. **Authentication → URL Configuration** (required — wrong Site URL sends confirm emails to localhost)
    - Site URL: `https://the-rich-reporter-competitions.vercel.app` (or your custom domain)
-   - Redirect URLs: production `/**` and `http://localhost:3000/**`
+   - Redirect URLs (allow list), one per line or comma-separated:
+     - `https://the-rich-reporter-competitions.vercel.app/**`
+     - `https://the-rich-reporter-competitions.vercel.app/login`
+     - `http://localhost:3000/**` (local dev only)
+   - Signup uses `emailRedirectTo: ${NEXT_PUBLIC_SITE_URL}/login` — Site URL + allow list must match production
 5. **Database → Replication** — enable Realtime for table `tickets` (for live inventory)
 
 ## 2. Run SQL (in order)

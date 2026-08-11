@@ -87,3 +87,186 @@ body::before {
   height: 2px;
   background: transparent;
 }
+
+/* ---------------------------------------------------------------------------
+   Motion utilities — transform & opacity only, champagne accent throughout.
+   --------------------------------------------------------------------------- */
+
+.motion-brand {
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hover-lift {
+  transition:
+    transform 250ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 250ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 250ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-strong);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.45),
+    0 16px 36px rgba(0, 0, 0, 0.4);
+}
+
+/* Underline wipe for nav / inline links */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -4px;
+  height: 1px;
+  background: var(--champagne);
+  opacity: 0.85;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav-link:hover::after,
+.nav-link:focus-visible::after,
+.nav-link--active::after {
+  transform: scaleX(1);
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--champagne);
+  outline-offset: 3px;
+}
+
+/* "How it works" steps — accent creeps in on hover */
+.step-item {
+  transition:
+    border-color 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.step-item:hover {
+  border-color: color-mix(in srgb, var(--champagne) 55%, transparent);
+  transform: translateX(3px);
+}
+
+/* Slow hero breathe behind the parallax layer */
+@keyframes hero-drift {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.04);
+  }
+}
+
+.hero-drift {
+  animation: hero-drift 28s ease-in-out infinite alternate;
+}
+
+@media (max-width: 640px) {
+  .hero-drift {
+    animation: none;
+  }
+}
+
+/* Sticky nav settle: soft champagne hairline */
+.nav-edge {
+  pointer-events: none;
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 1px;
+  overflow: hidden;
+}
+
+.nav-edge__line {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(196, 165, 116, 0.2) 18%,
+    rgba(196, 165, 116, 0.5) 50%,
+    rgba(196, 165, 116, 0.2) 82%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+  opacity: 0;
+  transform: scaleX(0.08);
+  transform-origin: left center;
+}
+
+.nav-edge--wipe .nav-edge__line {
+  animation: nav-edge-wipe 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.nav-edge--settled .nav-edge__line {
+  animation: none;
+  opacity: 0.7;
+  transform: scaleX(1);
+}
+
+@keyframes nav-edge-wipe {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.08);
+  }
+  22% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0.7;
+    transform: scaleX(1);
+  }
+}
+
+/* Desktop: finger cursor on interactive targets */
+@media (min-width: 641px) {
+  a[href]:not([aria-disabled="true"]),
+  button:not(:disabled):not([aria-disabled="true"]),
+  [role="button"]:not([aria-disabled="true"]),
+  label[for],
+  summary,
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  input[type="submit"]:not(:disabled),
+  input[type="button"]:not(:disabled),
+  input[type="file"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /* :has() kept separate — one invalid selector drops the whole rule list */
+  label:has(input[type="checkbox"]:not(:disabled)),
+  label:has(input[type="radio"]:not(:disabled)) {
+    cursor: pointer;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .hero-drift {
+    animation: none !important;
+  }
+
+  .nav-edge--wipe .nav-edge__line {
+    animation: none !important;
+    opacity: 0.7;
+    transform: scaleX(1);
+  }
+}

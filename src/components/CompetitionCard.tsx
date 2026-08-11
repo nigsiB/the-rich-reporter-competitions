@@ -25,10 +25,10 @@ export default function CompetitionCard({
   const price = formatUsd(competition.pricePerEntry);
 
   return (
-    <article className="group flex flex-col" style={{ animationDelay: `${index * 60}ms` }}>
+    <article className="hover-lift group flex h-full flex-col border border-transparent">
       <Link
         href={`/competitions/${competition.id}`}
-        className="relative block aspect-[4/5] overflow-hidden bg-[var(--bg-elevated)]"
+        className="focus-ring relative block aspect-[4/5] overflow-hidden bg-[var(--bg-elevated)]"
       >
         <Image
           src={competition.imageUrl}
@@ -59,7 +59,7 @@ export default function CompetitionCard({
           <h3 className="font-[family-name:var(--font-display)] text-2xl leading-tight tracking-wide text-[var(--fg)]">
             <Link
               href={`/competitions/${competition.id}`}
-              className="transition-colors duration-300 hover:text-[var(--champagne)]"
+              className="nav-link focus-ring transition-colors duration-300 hover:text-[var(--champagne)]"
             >
               {competition.title}
             </Link>

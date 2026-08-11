@@ -3,6 +3,8 @@ import { Cormorant_Garamond, Outfit } from "next/font/google";
 
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
+import ScrollProgress from "@/components/motion/ScrollProgress";
+import SmoothScrollProvider from "@/components/motion/SmoothScrollProvider";
 import { getLocale } from "@/i18n/getDictionary";
 import "./globals.css";
 
@@ -34,6 +36,8 @@ export default async function RootLayout({
   return (
     <html lang={locale} className={`${display.variable} ${sans.variable}`}>
       <body className="min-h-screen antialiased">
+        <ScrollProgress />
+        <SmoothScrollProvider />
         <SiteHeader />
         {children}
         <SiteFooter />

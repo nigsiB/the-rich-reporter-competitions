@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import Image from "next/image";
 
+import ParallaxFrame from "@/components/motion/ParallaxFrame";
+
 type CompetitionGalleryProps = {
   title: string;
   mainUrl: string;
@@ -67,14 +69,16 @@ export default function CompetitionGallery({
         className="group relative block aspect-[4/5] w-full overflow-hidden bg-[var(--bg-elevated)] text-left"
         aria-label={`View ${title} image`}
       >
-        <Image
-          src={images[0]}
-          alt={title}
-          fill
-          priority
-          sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover transition-[transform,filter] duration-700 group-hover:scale-[1.02] group-hover:brightness-[1.04]"
-        />
+        <ParallaxFrame range={22}>
+          <Image
+            src={images[0]}
+            alt={title}
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover transition-[transform,filter] duration-700 group-hover:scale-[1.02] group-hover:brightness-[1.04]"
+          />
+        </ParallaxFrame>
         <div
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--bg-deep)]/55 via-transparent to-transparent"
           aria-hidden="true"

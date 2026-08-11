@@ -6,9 +6,9 @@ import { getDictionary } from "@/i18n/getDictionary";
 import Link from "next/link";
 
 const linkClass =
-  "text-[10px] uppercase tracking-[0.28em] text-[var(--muted)] transition-colors duration-300 hover:text-[var(--champagne)]";
+  "nav-link focus-ring text-[10px] uppercase tracking-[0.28em] text-[var(--muted)] transition-colors duration-300 hover:text-[var(--champagne)]";
 const utilityClass =
-  "inline-flex items-center leading-none text-[10px] uppercase tracking-[0.24em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)]";
+  "nav-link focus-ring inline-flex items-center leading-none text-[10px] uppercase tracking-[0.24em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)]";
 const utilityButtonClass =
   `${utilityClass} cursor-pointer border-0 bg-transparent p-0 font-[inherit]`;
 const mobileLinkClass =

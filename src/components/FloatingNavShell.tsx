@@ -19,12 +19,36 @@ export default function FloatingNavShell({
 }: FloatingNavShellProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  // "wipe" plays the champagne hairline in once, then parks on "settled" so
+  // small scroll jitters around the threshold don't re-trigger the animation.
+  const [edge, setEdge] = useState<"hidden" | "wipe" | "settled">("hidden");
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    let past = false;
+    let settleTimer = 0;
+
+    const onScroll = () => {
+      const next = window.scrollY > 24;
+      if (next === past) return;
+      past = next;
+
+      setScrolled(next);
+      window.clearTimeout(settleTimer);
+
+      if (next) {
+        setEdge("wipe");
+        settleTimer = window.setTimeout(() => setEdge("settled"), 700);
+      } else {
+        setEdge("hidden");
+      }
+    };
+
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.clearTimeout(settleTimer);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   useEffect(() => {
@@ -40,12 +64,17 @@ export default function FloatingNavShell({
   return (
     <header className="fixed inset-x-0 top-0 z-50">
       <div
-        className={`backdrop-blur-xl transition-[background-color,box-shadow] duration-500 ${
+        className={`relative backdrop-blur-xl transition-[background-color,box-shadow] duration-500 ${
           scrolled
             ? "bg-[var(--bg-deep)]/90 shadow-[0_8px_28px_rgba(0,0,0,0.28)]"
             : "bg-[var(--bg-deep)]/60"
         }`}
       >
+        {edge === "hidden" ? null : (
+          <span className={`nav-edge nav-edge--${edge}`} aria-hidden="true">
+            <span className="nav-edge__line" />
+          </span>
+        )}
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-3.5 md:gap-6 md:px-10 md:py-4">
           <div className="min-w-0 shrink-0">{logo}</div>
 

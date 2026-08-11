@@ -50,8 +50,13 @@ export default function FadeIn({ children, className, delay = 0, y = 24 }: FadeI
       el.style.transform = "translateY(0px)";
     };
 
+    // Any callback at all — including the initial "not intersecting" one —
+    // proves the observer is working and will fire when we scroll to it.
+    let observerAlive = false;
+
     const io = new IntersectionObserver(
       ([entry]) => {
+        observerAlive = true;
         if (!entry?.isIntersecting) return;
         reveal();
         io.disconnect();
@@ -61,8 +66,13 @@ export default function FadeIn({ children, className, delay = 0, y = 24 }: FadeI
 
     io.observe(el);
 
-    // Safety net — never leave copy stuck invisible.
-    const fallback = window.setTimeout(reveal, 1200);
+    // Safety net for a dead observer only. Revealing unconditionally here
+    // would fade everything in ~1.2s after hydration, so the scroll reveal
+    // would never actually be seen.
+    const fallback = window.setTimeout(() => {
+      if (observerAlive) return;
+      reveal();
+    }, 1200);
 
     return () => {
       cancelAnimationFrame(raf);

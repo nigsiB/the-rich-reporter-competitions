@@ -3,6 +3,7 @@ import AmoeBlock from "@/components/AmoeBlock";
 import CompetitionGrid from "@/components/CompetitionGrid";
 import FadeIn from "@/components/motion/FadeIn";
 import HeroBackdrop from "@/components/motion/HeroBackdrop";
+import WhoWeAre from "@/components/WhoWeAre";
 import { getActiveCompetitions } from "@/lib/competitions";
 import { getDictionary } from "@/i18n/getDictionary";
 
@@ -100,6 +101,10 @@ export default async function HomePage() {
 
         <FadeIn>
           <AmoeBlock />
+        </FadeIn>
+
+        <FadeIn>
+          <WhoWeAre />
         </FadeIn>
       </div>
     </main>

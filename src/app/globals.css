@@ -140,6 +140,24 @@ body::before {
   outline-offset: 3px;
 }
 
+/* Cover strip — panned by dragging or by finger, never by a scrollbar.
+   Overflow scrolling is still what moves it (so touch and trackpads work
+   natively); the bar itself is just hidden. The grab cursor is the affordance
+   that replaces it. */
+.cover-strip {
+  cursor: grab;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* legacy Edge */
+}
+
+.cover-strip:active {
+  cursor: grabbing;
+}
+
+.cover-strip::-webkit-scrollbar {
+  display: none;
+}
+
 /* "How it works" steps — accent creeps in on hover */
 .step-item {
   transition:

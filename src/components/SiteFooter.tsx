@@ -16,6 +16,12 @@ export default async function SiteFooter() {
           <p className="mt-3 max-w-sm text-xs leading-relaxed text-[var(--muted)]/80">
             {dict.worldwide}
           </p>
+          <p className="mt-4 flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-[var(--champagne)]/50 text-[9px] text-[var(--champagne)]">
+              18+
+            </span>
+            Entrants must be 18 or over
+          </p>
         </div>
         <div className="flex flex-wrap gap-8 text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
           <Link href="/membership" className="transition-colors hover:text-[var(--champagne)]">
@@ -41,6 +47,15 @@ export default async function SiteFooter() {
           </Link>
           <Link href="/legal/terms" className="transition-colors hover:text-[var(--champagne)]">
             {dict.footerTerms}
+          </Link>
+          <Link
+            href="/legal/disclaimer"
+            className="transition-colors hover:text-[var(--champagne)]"
+          >
+            Disclaimer
+          </Link>
+          <Link href="/legal/mission" className="transition-colors hover:text-[var(--champagne)]">
+            Mission Statement
           </Link>
           <span>© {new Date().getFullYear()}</span>
         </div>

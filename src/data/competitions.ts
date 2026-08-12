@@ -67,12 +67,14 @@ export const competitions: Competition[] = [
     cashAlternative: 40000,
     retailValue: 45000,
     drawDate: daysFromNow(60),
-    imageUrl:
-      "https://images.unsplash.com/photo-1758219751271-bc46553e2b41?auto=format&fit=crop&q=85&w=1200&sat=-25&bri=-15",
+    // Client-supplied press shot. Source is 2400x1600 landscape and the cards
+    // are 4:5, so a centre crop lost the back of the car — letterboxed onto
+    // --bg-elevated instead, which reads as part of the dark card.
+    imageUrl: "/prizes/dodge-card-contain.jpg",
     galleryUrls: [
-      "https://images.unsplash.com/photo-1675976916879-844eaa3944b2?auto=format&fit=crop&q=85&w=1200",
+      "/prizes/dodge-full.jpg",
       "https://images.unsplash.com/photo-1630586692962-88b49ca2617d?auto=format&fit=crop&q=85&w=1200",
-      "https://images.unsplash.com/photo-1692807381316-e51140a7a00f?auto=format&fit=crop&q=85&w=1200",
+      "https://images.unsplash.com/photo-1675976916879-844eaa3944b2?auto=format&fit=crop&q=85&w=1200",
     ],
     displayOrder: 1,
     status: "active",

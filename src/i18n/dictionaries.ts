@@ -26,7 +26,7 @@ const en = {
   competitionsEyebrow: "Current Collection",
   competitionsHeading: "Exclusive draws",
   competitionsIntro:
-    "Five curated prizes. Entry at twenty-five cents. We deliver winners worldwide.",
+    "Four curated prizes, from a flagship handset to a Los Angeles home. We deliver winners worldwide.",
   howItWorks: "How it works",
   howHeading: "An invitation, not a rush",
   step1Title: "Choose a prize",
@@ -211,7 +211,7 @@ const es: Dictionary = {
   competitionsEyebrow: "Colección actual",
   competitionsHeading: "Sorteos exclusivos",
   competitionsIntro:
-    "Cinco premios seleccionados. Entrada a veinticinco centavos. Entregamos en todo el mundo.",
+    "Cuatro premios seleccionados, desde un teléfono de última generación hasta una vivienda en Los Ángeles. Entregamos en todo el mundo.",
   howItWorks: "Cómo funciona",
   howHeading: "Una invitación, no una prisa",
   step1Title: "Elige un premio",
@@ -390,7 +390,7 @@ const fr: Dictionary = {
   competitionsEyebrow: "Collection actuelle",
   competitionsHeading: "Tirages exclusifs",
   competitionsIntro:
-    "Cinq prix sélectionnés. Entrée à vingt-cinq cents. Nous livrons les gagnants dans le monde entier.",
+    "Quatre lots d'exception, du smartphone haut de gamme à un logement à Los Angeles. Nous livrons partout dans le monde.",
   howItWorks: "Comment ça marche",
   howHeading: "Une invitation, pas une course",
   step1Title: "Choisissez un prix",
@@ -569,7 +569,7 @@ const de: Dictionary = {
   competitionsEyebrow: "Aktuelle Kollektion",
   competitionsHeading: "Exklusive Verlosungen",
   competitionsIntro:
-    "Fünf kuratierte Preise. Teilnahme für fünfundzwanzig Cent. Wir liefern Gewinner weltweit.",
+    "Vier ausgewählte Preise, vom Spitzen-Smartphone bis zur Wohnung in Los Angeles. Wir liefern weltweit.",
   howItWorks: "So funktioniert's",
   howHeading: "Eine Einladung, kein Ansturm",
   step1Title: "Preis wählen",
@@ -748,7 +748,7 @@ const pt: Dictionary = {
   competitionsEyebrow: "Coleção atual",
   competitionsHeading: "Sorteios exclusivos",
   competitionsIntro:
-    "Cinco prémios selecionados. Entrada a vinte e cinco cêntimos. Entregamos vencedores em todo o mundo.",
+    "Quatro prémios selecionados, de um telemóvel topo de gama a uma casa em Los Angeles. Entregamos em todo o mundo.",
   howItWorks: "Como funciona",
   howHeading: "Um convite, não uma corrida",
   step1Title: "Escolha um prémio",
@@ -927,7 +927,7 @@ const it: Dictionary = {
   competitionsEyebrow: "Collezione attuale",
   competitionsHeading: "Estrazioni esclusive",
   competitionsIntro:
-    "Cinque premi selezionati. Ingresso a venticinque centesimi. Consegnamo i vincitori in tutto il mondo.",
+    "Quattro premi selezionati, da uno smartphone di punta a una casa a Los Angeles. Consegniamo in tutto il mondo.",
   howItWorks: "Come funziona",
   howHeading: "Un invito, non una corsa",
   step1Title: "Scegli un premio",

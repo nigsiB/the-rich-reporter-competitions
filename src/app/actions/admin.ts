@@ -164,15 +164,61 @@ export async function createCompetitionAction(
 }
 
 /**
- * Create the ticket inventory and prove it actually landed.
+ * Supabase caps API-role statements at 8s, and this database inserts tickets
+ * at ~16,000 rows/sec, so ~130,000 rows is the hard ceiling for any single
+ * call: measured, 100,000 succeeds in 6.2s and 200,000 dies at 7.7s (57014).
+ *
+ * Total time is governed by throughput rather than chunk size, so a smaller
+ * chunk costs almost nothing overall and buys margin on each call. A
+ * 600,000-row run at 50,000 completed in 41s but one chunk spiked to 6.5s —
+ * uncomfortably close to the wall for a database under real load.
+ */
+const TICKET_CHUNK = 25_000;
+
+/** Smallest range worth splitting to; below this a failure is a real failure. */
+const MIN_CHUNK = 2_000;
+
+/**
+ * Insert one range, halving and retrying if the statement times out.
+ *
+ * The first insert against a brand-new competition is markedly slower than the
+ * rest — measured on this database at 10.5s for the opening 25,000 while the
+ * three that followed took 4.4s, 2.6s and 1.9s. Cold index and page
+ * allocation, and enough on its own to blow the 8s ceiling no matter how small
+ * the configured chunk is. Halving turns that into a brief retry rather than a
+ * competition with no tickets.
+ *
+ * Returns an error message, or null once the whole range is in.
+ */
+async function insertRange(
+  supabase: SupabaseClient,
+  competitionId: string,
+  from: number,
+  to: number,
+): Promise<{ message: string } | null> {
+  const { error } = await supabase.rpc("generate_tickets_range", {
+    p_competition_id: competitionId,
+    p_from: from,
+    p_to: to,
+  });
+  if (!error) return null;
+  if (to - from + 1 <= MIN_CHUNK) return error;
+
+  const mid = Math.floor((from + to) / 2);
+  return (
+    (await insertRange(supabase, competitionId, from, mid)) ??
+    (await insertRange(supabase, competitionId, mid + 1, to))
+  );
+}
+
+/**
+ * Create the ticket inventory in chunks and prove it actually landed.
  *
  * The RPC error was previously discarded, so a failed generation still
- * reported success and published a competition nobody could enter. Older
- * databases still run the row-at-a-time version of
- * generate_tickets_for_competition, which is killed by statement_timeout
- * (57014) well before 180,000 rows — see migrations/010. Counting afterwards
- * catches that, and any other partial write, regardless of which version of
- * the function the database happens to have.
+ * reported success and published a competition nobody could enter. Chunking
+ * is what makes a large draw possible at all; the count afterwards is what
+ * makes a failure honest, and it holds regardless of which version of the
+ * SQL functions the database has.
  *
  * Returns an error message, or null on success.
  */
@@ -181,10 +227,13 @@ async function generateTickets(
   competitionId: string,
   totalEntries: number,
 ): Promise<string | null> {
-  const { error: rpcError } = await supabase.rpc("generate_tickets_for_competition", {
-    p_competition_id: competitionId,
-    p_total: totalEntries,
-  });
+  let rpcError: { message: string } | null = null;
+
+  for (let from = 1; from <= totalEntries; from += TICKET_CHUNK) {
+    const to = Math.min(from + TICKET_CHUNK - 1, totalEntries);
+    rpcError = await insertRange(supabase, competitionId, from, to);
+    if (rpcError) break;
+  }
 
   const { count, error: countError } = await supabase
     .from("tickets")
@@ -200,13 +249,13 @@ async function generateTickets(
   const created = count ?? 0;
   const detail = rpcError
     ? rpcError.message
-    : "ticket generation stopped early (most likely a database statement timeout)";
+    : "ticket generation stopped early";
 
   return (
     `The competition was created but only ${created.toLocaleString()} of ` +
     `${totalEntries.toLocaleString()} tickets were generated — ${detail}. ` +
-    `It is saved as-is and nobody can enter it yet. Run the migration in ` +
-    `supabase/migrations/010_fast_ticket_generation.sql, then delete and ` +
+    `It is saved as-is and nobody can enter it yet. Check that the migrations ` +
+    `in supabase/migrations/010 and /011 have been run, then delete and ` +
     `recreate this competition.`
   );
 }

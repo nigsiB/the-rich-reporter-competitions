@@ -27,6 +27,10 @@ function PaymentForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [succeeded, setSucceeded] = useState(false);
+  // Signup already blocks under-18s on date of birth (see actions/auth.ts).
+  // This is the point-of-sale confirmation: the person paying attests, at the
+  // moment of paying, that the entry is theirs and they are of age.
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
 
   const formatted = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -39,6 +43,12 @@ function PaymentForm({
 
     setLoading(true);
     setError("");
+
+    if (!ageConfirmed) {
+      setError("Please confirm you are 18 or over before paying.");
+      setLoading(false);
+      return;
+    }
 
     const { error: submitError } = await elements.submit();
     if (submitError) {
@@ -110,6 +120,34 @@ function PaymentForm({
           },
         }}
       />
+      <label className="flex cursor-pointer items-start gap-3 border border-[var(--border)] p-4 text-xs leading-relaxed text-[var(--muted)] transition-colors hover:border-[var(--champagne)]/40">
+        <input
+          type="checkbox"
+          checked={ageConfirmed}
+          onChange={(e) => setAgeConfirmed(e.target.checked)}
+          className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-[var(--champagne)]"
+          aria-describedby="age-confirm-text"
+        />
+        <span id="age-confirm-text">
+          I confirm I am <span className="text-[var(--fg)]">18 years of age or older</span>, these
+          entries are for me, and I have read the{" "}
+          <Link
+            href="/legal/official-rules"
+            className="text-[var(--champagne)] underline-offset-4 hover:underline"
+          >
+            Official Rules
+          </Link>{" "}
+          and{" "}
+          <Link
+            href="/legal/disclaimer"
+            className="text-[var(--champagne)] underline-offset-4 hover:underline"
+          >
+            Disclaimer
+          </Link>
+          .
+        </span>
+      </label>
+
       <p className="text-xs leading-relaxed text-[var(--muted)]">
         International cards and local payment methods (where enabled) accepted. Charged in USD via
         Stripe Custom Elements — you stay on this page unless your bank requires verification.

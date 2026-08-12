@@ -17,6 +17,12 @@ export default function LegalLayout({ children }: { children: ReactNode }) {
         <Link href="/legal/terms" className="hover:text-[var(--champagne)]">
           Terms
         </Link>
+        <Link href="/legal/disclaimer" className="hover:text-[var(--champagne)]">
+          Disclaimer
+        </Link>
+        <Link href="/legal/mission" className="hover:text-[var(--champagne)]">
+          Mission Statement
+        </Link>
       </nav>
       {children}
     </main>

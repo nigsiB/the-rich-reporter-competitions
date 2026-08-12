@@ -67,14 +67,36 @@ Add the same keys for Production (and Preview if desired). Redeploy after saving
 
 ## 5. Promote an admin
 
-1. Sign up at `/membership`
-2. In SQL Editor:
+The person being promoted must have signed up at `/membership` first — these
+match on an existing `profiles` row and affect zero rows otherwise.
+
+### Normal case — you already have an admin
+
+Sign in as an existing admin → **`/admin/members`** → **Make admin** on their row.
+
+Use this whenever it's available. It runs with an authenticated admin session,
+which is what the `protect_is_admin_column` trigger
+(`migrations/009_admin_members.sql`) requires.
+
+### Bootstrapping the very first admin
+
+A bare `UPDATE ... SET is_admin = true` **will fail** — including in the SQL
+Editor and with the `service_role` key. The trigger checks `auth.uid()` against
+the admin list, and `auth.uid()` is `NULL` in both, so it raises
+`Only admins can change is_admin`.
+
+Drop the trigger for the one statement:
 
 ```sql
+ALTER TABLE profiles DISABLE TRIGGER protect_is_admin_column;
 UPDATE profiles SET is_admin = true WHERE email = 'your-client@email.com';
+ALTER TABLE profiles ENABLE TRIGGER protect_is_admin_column;
 ```
 
-3. Sign in → `/admin`
+Re-enabling is not optional — left disabled, any signed-in member could make
+themselves an admin with a direct client update.
+
+Then sign in → `/admin`.
 
 ## 6. Cron (reservation expiry)
 

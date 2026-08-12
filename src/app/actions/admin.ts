@@ -13,6 +13,8 @@ import { redirect } from "next/navigation";
 
 const TRANSLATION_LOCALES = ["es", "fr", "de", "pt", "it"] as const;
 
+type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
+
 function normalizeTranslations(
   input: CompetitionTranslations | undefined,
 ): CompetitionTranslations {
@@ -149,15 +151,64 @@ export async function createCompetitionAction(
   }
 
   if (input.generateTickets) {
-    await supabase.rpc("generate_tickets_for_competition", {
-      p_competition_id: data.id,
-      p_total: input.totalEntries,
-    });
+    const ticketError = await generateTickets(supabase, data.id, input.totalEntries);
+    if (ticketError) {
+      revalidatePath("/admin");
+      return { success: false, error: ticketError };
+    }
   }
 
   revalidatePath("/");
   revalidatePath("/admin");
   return { success: true, data: { id: data.id } };
+}
+
+/**
+ * Create the ticket inventory and prove it actually landed.
+ *
+ * The RPC error was previously discarded, so a failed generation still
+ * reported success and published a competition nobody could enter. Older
+ * databases still run the row-at-a-time version of
+ * generate_tickets_for_competition, which is killed by statement_timeout
+ * (57014) well before 180,000 rows — see migrations/010. Counting afterwards
+ * catches that, and any other partial write, regardless of which version of
+ * the function the database happens to have.
+ *
+ * Returns an error message, or null on success.
+ */
+async function generateTickets(
+  supabase: SupabaseClient,
+  competitionId: string,
+  totalEntries: number,
+): Promise<string | null> {
+  const { error: rpcError } = await supabase.rpc("generate_tickets_for_competition", {
+    p_competition_id: competitionId,
+    p_total: totalEntries,
+  });
+
+  const { count, error: countError } = await supabase
+    .from("tickets")
+    .select("id", { count: "exact", head: true })
+    .eq("competition_id", competitionId);
+
+  if (countError) {
+    return `The competition was created, but its tickets could not be verified: ${countError.message}. Check the competition before publishing it.`;
+  }
+
+  if ((count ?? 0) >= totalEntries) return null;
+
+  const created = count ?? 0;
+  const detail = rpcError
+    ? rpcError.message
+    : "ticket generation stopped early (most likely a database statement timeout)";
+
+  return (
+    `The competition was created but only ${created.toLocaleString()} of ` +
+    `${totalEntries.toLocaleString()} tickets were generated — ${detail}. ` +
+    `It is saved as-is and nobody can enter it yet. Run the migration in ` +
+    `supabase/migrations/010_fast_ticket_generation.sql, then delete and ` +
+    `recreate this competition.`
+  );
 }
 
 export async function updateCompetitionAction(

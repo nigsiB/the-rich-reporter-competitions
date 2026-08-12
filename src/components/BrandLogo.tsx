@@ -21,15 +21,17 @@ export default function BrandLogo({
       aria-label="The Rich Reporter Competitions — Home"
     >
       <Image
-        src="/logos/rich-reporter-logo.png"
+        src="/logos/rich-reporter-champagne.png"
         alt="The Rich Reporter"
-        width={300}
-        height={42}
+        width={900}
+        height={370}
         priority={priority}
-        className="h-7 w-auto md:h-8"
+        // Stacked two-line lockup (2.43:1), so it needs far more height than
+        // the old single-line mark to stay legible.
+        className="h-11 w-auto md:h-12"
       />
       {showCompetitionsLabel ? (
-        <span className="pl-[7%] text-[9px] uppercase tracking-[0.35em] text-[var(--muted)] transition-colors group-hover:text-[var(--champagne)]">
+        <span className="text-[9px] uppercase tracking-[0.35em] text-[var(--muted)] transition-colors group-hover:text-[var(--champagne)]">
           Competitions
         </span>
       ) : null}

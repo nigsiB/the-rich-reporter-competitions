@@ -40,6 +40,12 @@ yarn-error.log*
 # local tooling
 .claude/settings.local.json
 
+# Source artwork. Everything under public/ is served to anyone who guesses the
+# URL, so raw supplied files stay out of git — the processed, sized versions
+# the site actually uses live in public/logos/.
+public/RR *.png
+public/KDC *.png
+
 # vercel
 .vercel
 

@@ -7,8 +7,14 @@ import Link from "next/link";
 
 const linkClass =
   "nav-link focus-ring text-[10px] uppercase tracking-[0.28em] text-[var(--muted)] transition-colors duration-300 hover:text-[var(--champagne)]";
-const utilityClass =
-  "nav-link focus-ring inline-flex items-center leading-none text-[10px] uppercase tracking-[0.24em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)]";
+// `display` must not live in the shared base: an element carrying both
+// `inline-flex` and `hidden` resolves by stylesheet order, not class order,
+// so `inline-flex` wins and `hidden` silently does nothing.
+const utilityBase =
+  "nav-link focus-ring items-center leading-none text-[10px] uppercase tracking-[0.24em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)]";
+const utilityClass = `inline-flex ${utilityBase}`;
+/** Hidden on phones, where the top bar has no room for it. */
+const utilityClassSmUp = `hidden sm:inline-flex ${utilityBase}`;
 const utilityButtonClass =
   `${utilityClass} cursor-pointer border-0 bg-transparent p-0 font-[inherit]`;
 const mobileLinkClass =
@@ -65,6 +71,10 @@ export default async function SiteHeader() {
           {dict.signIn}
         </Link>
       )}
+      {/* Phones only — the switcher is ~136px wide and will not fit the bar. */}
+      <div className="mt-3 border-t border-[var(--border)] pt-4 sm:hidden">
+        <LanguageSwitcher locale={locale} label={dict.language} />
+      </div>
     </>
   );
 
@@ -72,7 +82,7 @@ export default async function SiteHeader() {
     <>
       {user ? (
         <>
-          <Link href="/account" className={`${utilityClass} hidden sm:inline-flex`}>
+          <Link href="/account" className={utilityClassSmUp}>
             {dict.navAccount}
           </Link>
           <form action={signOutAction} className="m-0 inline-flex items-center">
@@ -83,7 +93,7 @@ export default async function SiteHeader() {
         </>
       ) : (
         <>
-          <Link href="/login" className={`${utilityClass} hidden sm:inline-flex`}>
+          <Link href="/login" className={utilityClassSmUp}>
             {dict.signIn}
           </Link>
           <Link href="/membership" className={utilityClass}>
@@ -91,7 +101,9 @@ export default async function SiteHeader() {
           </Link>
         </>
       )}
-      <LanguageSwitcher locale={locale} label={dict.language} />
+      <span className="hidden sm:inline-flex">
+        <LanguageSwitcher locale={locale} label={dict.language} />
+      </span>
     </>
   );
 

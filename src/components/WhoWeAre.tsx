@@ -32,18 +32,54 @@ export default function WhoWeAre() {
     syncArrows();
     const el = strip.current;
     if (!el) return;
+
     el.addEventListener("scroll", syncArrows, { passive: true });
     window.addEventListener("resize", syncArrows);
+
+    // scrollWidth is wrong until the covers have loaded, which left the right
+    // arrow disabled on a strip that could in fact be panned.
+    const ro = new ResizeObserver(syncArrows);
+    ro.observe(el);
+    for (const img of el.querySelectorAll("img")) {
+      if (!img.complete) img.addEventListener("load", syncArrows, { once: true });
+    }
+
     return () => {
       el.removeEventListener("scroll", syncArrows);
       window.removeEventListener("resize", syncArrows);
+      ro.disconnect();
     };
   }, [syncArrows]);
 
+  /**
+   * Eased pan, driven by our own rAF loop rather than `behavior: "smooth"`,
+   * which is linear and stops dead. Same easing curve as the rest of the site.
+   */
   const page = (dir: -1 | 1) => {
     const el = strip.current;
     if (!el) return;
-    el.scrollBy({ left: dir * Math.max(el.clientWidth * 0.8, 240), behavior: "smooth" });
+
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const distance = dir * Math.max(el.clientWidth * 0.8, 240);
+    const from = el.scrollLeft;
+    const to = Math.max(0, Math.min(from + distance, el.scrollWidth - el.clientWidth));
+
+    if (reduce) {
+      el.scrollLeft = to;
+      return;
+    }
+
+    const easeInOutCubic = (t: number) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    const duration = 520;
+    const start = performance.now();
+    const step = (now: number) => {
+      const t = Math.min((now - start) / duration, 1);
+      el.scrollLeft = from + (to - from) * easeInOutCubic(t);
+      if (t < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
   };
 
   // Click-and-drag panning for mouse users.
@@ -118,7 +154,9 @@ export default function WhoWeAre() {
           >
             Visit the magazine
           </a>
-          <div className="hidden gap-2 sm:flex">
+          {/* Kept visible even when a pan is possible by dragging — the drag
+              affordance is not discoverable on its own. */}
+          <div className="flex gap-2">
             <button
               type="button"
               onClick={() => page(-1)}
@@ -147,7 +185,9 @@ export default function WhoWeAre() {
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
         onPointerLeave={endDrag}
-        className="cover-strip flex snap-x snap-mandatory select-none gap-5 overflow-x-auto pb-2"
+        // No scroll-snap: it quantises the eased pan to one cover per frame,
+        // so the animation lands in 200px steps instead of gliding.
+        className="cover-strip flex select-none gap-5 overflow-x-auto pb-2"
       >
         {magazineCovers.map((cover, i) => (
           <li key={cover.thumb} className="shrink-0 snap-start">
@@ -199,29 +239,69 @@ export default function WhoWeAre() {
             Close
           </button>
 
+          <button
+            type="button"
+            aria-label="Previous cover"
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpenIndex((i) =>
+                i === null ? i : (i - 1 + magazineCovers.length) % magazineCovers.length,
+              );
+            }}
+            className="focus-ring absolute left-3 top-1/2 z-[2] -translate-y-1/2 px-3 py-6 text-[10px] uppercase tracking-[0.22em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)] md:left-8"
+          >
+            Prev
+          </button>
+          <button
+            type="button"
+            aria-label="Next cover"
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpenIndex((i) => (i === null ? i : (i + 1) % magazineCovers.length));
+            }}
+            className="focus-ring absolute right-3 top-1/2 z-[2] -translate-y-1/2 px-3 py-6 text-[10px] uppercase tracking-[0.22em] text-[var(--muted)] transition-colors hover:text-[var(--champagne)] md:right-8"
+          >
+            Next
+          </button>
+
           <div
-            className="relative flex max-h-[88vh] flex-col items-center gap-4"
+            className="relative flex max-h-[88vh] flex-col items-center gap-5 px-12 md:px-20"
             onClick={(e) => e.stopPropagation()}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
+              key={open.full}
               src={open.full}
               alt={open.title}
-              className="max-h-[78vh] max-w-full object-contain shadow-[0_24px_80px_rgba(0,0,0,0.45)]"
+              className="max-h-[72vh] max-w-full object-contain shadow-[0_24px_80px_rgba(0,0,0,0.45)]"
               onError={(e) => {
                 // Fall back to the WordPress derivative if the original 404s.
                 const el = e.currentTarget;
                 if (el.src !== open.thumb) el.src = open.thumb;
               }}
             />
-            <a
-              href={open.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="nav-link focus-ring text-[10px] uppercase tracking-[0.24em] text-[var(--champagne)]"
-            >
-              Read {open.title}
-            </a>
+
+            <div className="flex flex-col items-center gap-3">
+              <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--fg)]">
+                {open.title}
+              </p>
+              {/* Not every cover has its own issue page. Where it does not,
+                  say where the link actually goes rather than promising an
+                  edition and landing on the magazine's front page. */}
+              <a
+                href={open.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="focus-ring border border-[var(--champagne)]/50 px-6 py-3 text-[10px] uppercase tracking-[0.24em] text-[var(--champagne)] transition-colors hover:bg-[var(--champagne)] hover:text-[var(--bg-deep)]"
+              >
+                {open.href.replace(/\/$/, "") === MAGAZINE_URL.replace(/\/$/, "")
+                  ? "Visit the magazine"
+                  : "Read this edition"}
+              </a>
+              <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--muted)]">
+                {(openIndex ?? 0) + 1} / {magazineCovers.length}
+              </p>
+            </div>
           </div>
         </div>
       ) : null}

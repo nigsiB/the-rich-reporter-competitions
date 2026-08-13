@@ -16,14 +16,48 @@ export default async function SiteFooter() {
           <p className="mt-3 max-w-sm text-xs leading-relaxed text-[var(--muted)]/80">
             {dict.worldwide}
           </p>
-          <p className="mt-4 flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-[var(--champagne)]/50 text-[9px] text-[var(--champagne)]">
-              18+
-            </span>
-            Entrants must be 18 or over
-          </p>
+          <div className="mt-5 flex items-center gap-3">
+            {/* SVG rather than a bordered span: the ring keeps its weight at
+                any size and the glyph stays optically centred. */}
+            <svg
+              viewBox="0 0 40 40"
+              className="h-10 w-10 shrink-0"
+              role="img"
+              aria-label="Eighteen plus"
+            >
+              <circle
+                cx="20"
+                cy="20"
+                r="17"
+                fill="none"
+                stroke="var(--champagne)"
+                strokeWidth="2.75"
+              />
+              <text
+                x="20"
+                y="20"
+                textAnchor="middle"
+                dominantBaseline="central"
+                fill="var(--champagne)"
+                fontSize="15"
+                fontWeight="600"
+                letterSpacing="0.5"
+                fontFamily="var(--font-sans), system-ui, sans-serif"
+              >
+                18+
+              </text>
+            </svg>
+            {/* text-balance lets the browser even the two lines out, rather
+                than a long first line and a short orphan. */}
+            <p
+              aria-hidden="true"
+              className="max-w-[11rem] text-balance text-[10px] uppercase leading-[1.7] tracking-[0.22em] text-[var(--muted)]"
+            >
+              Entrants must be 18 or over
+            </p>
+          </div>
         </div>
-        <div className="flex flex-wrap gap-8 text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
+        <div className="flex flex-wrap gap-x-10 gap-y-4 text-[10px] uppercase tracking-[0.22em] text-[var(--muted)] md:max-w-xl md:justify-end">
           <Link href="/membership" className="transition-colors hover:text-[var(--champagne)]">
             {dict.navMembership}
           </Link>
@@ -57,8 +91,16 @@ export default async function SiteFooter() {
           <Link href="/legal/mission" className="transition-colors hover:text-[var(--champagne)]">
             Mission Statement
           </Link>
-          <span>© {new Date().getFullYear()}</span>
         </div>
+      </div>
+
+      {/* Copyright sits on its own baseline below the links, so the links can
+          space themselves evenly across the full width instead of leaving a
+          ragged gap where the year used to sit. */}
+      <div className="mx-auto max-w-7xl px-6 pb-10 md:px-10">
+        <p className="border-t border-[var(--border)] pt-6 text-center text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]/70">
+          © {new Date().getFullYear()} The Rich Reporter
+        </p>
       </div>
     </footer>
   );

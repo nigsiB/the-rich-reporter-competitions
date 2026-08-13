@@ -2,7 +2,8 @@ import type { Competition } from "@/data/competitions";
 import { competitions as localCompetitions } from "@/data/competitions";
 import { isSupabaseConfigured } from "@/lib/env";
 import type { CompetitionTranslations } from "@/lib/types";
-import { createClient } from "@/utils/supabase/server";
+import { createPublicClient } from "@/utils/supabase/public";
+import { unstable_cache } from "next/cache";
 
 /** Drop Unsplash sat/bri crush params so product photos stay vibrant. */
 function normalizeImageUrl(url: string | null | undefined): string {
@@ -66,9 +67,19 @@ function mapCompetition(row: DbCompetition, entriesRemaining: number): Competiti
   };
 }
 
-async function countAvailable(competitionId: string): Promise<number | null> {
+type CountClient = ReturnType<typeof createPublicClient>;
+
+/**
+ * An exact count is unavoidably O(rows) — measured at ~3.4s for a
+ * 600,000-ticket competition, and the homepage previously did one of these per
+ * competition, sequentially, on every request. Callers must pass a shared
+ * client and run these concurrently; see getActiveCompetitions.
+ */
+async function countAvailable(
+  supabase: CountClient,
+  competitionId: string,
+): Promise<number | null> {
   try {
-    const supabase = await createClient();
     const { count, error } = await supabase
       .from("tickets")
       .select("*", { count: "exact", head: true })
@@ -84,21 +95,25 @@ async function countAvailable(competitionId: string): Promise<number | null> {
 /** Homepage shows exactly five prizes. */
 const HOMEPAGE_LIMIT = 5;
 
-export async function getActiveCompetitions(): Promise<{
-  competitions: Competition[];
-  source: "live" | "local";
-}> {
-  if (!isSupabaseConfigured()) {
-    return {
-      competitions: [...localCompetitions]
-        .sort((a, b) => a.displayOrder - b.displayOrder)
-        .slice(0, HOMEPAGE_LIMIT),
-      source: "local",
-    };
-  }
+const localFallback = () => ({
+  competitions: [...localCompetitions]
+    .sort((a, b) => a.displayOrder - b.displayOrder)
+    .slice(0, HOMEPAGE_LIMIT),
+  source: "local" as const,
+});
 
-  try {
-    const supabase = await createClient();
+/**
+ * Cached because the ticket counts are expensive and identical for everyone.
+ *
+ * Uncached, the homepage spent ~6s server-side: four exact counts, run one
+ * after another, over 797,600 ticket rows. Every other route answers in
+ * ~0.25s. Sixty seconds of staleness is harmless here — InventoryBar
+ * subscribes to Supabase Realtime on `tickets`, so the bars correct
+ * themselves in the browser as tickets sell.
+ */
+const fetchActiveCompetitions = unstable_cache(
+  async () => {
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("competitions")
       .select("*")
@@ -107,60 +122,70 @@ export async function getActiveCompetitions(): Promise<{
       .order("created_at", { ascending: false })
       .limit(HOMEPAGE_LIMIT);
 
-    if (error || !data?.length) {
-      return {
-        competitions: [...localCompetitions]
-          .sort((a, b) => a.displayOrder - b.displayOrder)
-          .slice(0, HOMEPAGE_LIMIT),
-        source: "local",
-      };
-    }
+    if (error || !data?.length) return localFallback();
 
-    const mapped: Competition[] = [];
-    for (const row of data as DbCompetition[]) {
-      const available = await countAvailable(row.id);
-      mapped.push(mapCompetition(row, available ?? row.total_entries));
-    }
+    const rows = data as DbCompetition[];
+    // Concurrent, not sequential: total time is now the slowest count rather
+    // than the sum of all of them.
+    const counts = await Promise.all(rows.map((row) => countAvailable(supabase, row.id)));
 
-    return { competitions: mapped.slice(0, HOMEPAGE_LIMIT), source: "live" };
-  } catch {
     return {
-      competitions: [...localCompetitions]
-        .sort((a, b) => a.displayOrder - b.displayOrder)
+      competitions: rows
+        .map((row, i) => mapCompetition(row, counts[i] ?? row.total_entries))
         .slice(0, HOMEPAGE_LIMIT),
-      source: "local",
+      source: "live" as const,
     };
+  },
+  ["active-competitions"],
+  { revalidate: 60, tags: ["competitions"] },
+);
+
+export async function getActiveCompetitions(): Promise<{
+  competitions: Competition[];
+  source: "live" | "local";
+}> {
+  if (!isSupabaseConfigured()) return localFallback();
+
+  try {
+    return await fetchActiveCompetitions();
+  } catch {
+    return localFallback();
   }
 }
 
-export async function getLiveCompetitionById(
-  id: string,
-): Promise<{ competition: Competition | null; source: "live" | "local" }> {
-  if (!isSupabaseConfigured()) {
-    const local = localCompetitions.find((c) => c.id === id) ?? null;
-    return { competition: local, source: "local" };
-  }
-
-  try {
-    const supabase = await createClient();
+/** Cached for the same reason as the homepage — see fetchActiveCompetitions. */
+const fetchCompetitionById = unstable_cache(
+  async (id: string) => {
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("competitions")
       .select("*")
       .eq("id", id)
       .single();
 
-    if (error || !data) {
-      const local = localCompetitions.find((c) => c.id === id) ?? null;
-      return { competition: local, source: "local" };
-    }
+    if (error || !data) return null;
 
-    const available = await countAvailable(id);
-    return {
-      competition: mapCompetition(data as DbCompetition, available ?? data.total_entries),
-      source: "live",
-    };
+    const available = await countAvailable(supabase, id);
+    return mapCompetition(data as DbCompetition, available ?? data.total_entries);
+  },
+  ["competition-by-id"],
+  { revalidate: 60, tags: ["competitions"] },
+);
+
+export async function getLiveCompetitionById(
+  id: string,
+): Promise<{ competition: Competition | null; source: "live" | "local" }> {
+  const local = () => ({
+    competition: localCompetitions.find((c) => c.id === id) ?? null,
+    source: "local" as const,
+  });
+
+  if (!isSupabaseConfigured()) return local();
+
+  try {
+    const competition = await fetchCompetitionById(id);
+    return competition ? { competition, source: "live" } : local();
   } catch {
-    const local = localCompetitions.find((c) => c.id === id) ?? null;
-    return { competition: local, source: "local" };
+    return local();
   }
 }

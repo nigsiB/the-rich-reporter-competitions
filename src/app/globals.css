@@ -9,6 +9,9 @@
   --muted: #8a8680;
   --champagne: #c4a574;
   --champagne-soft: #a8906a;
+  /* Champagne is ~2.1:1 on white — fine on the dark site, illegible on paper.
+     This is the same hue taken darker for light surfaces (~5:1 on white). */
+  --champagne-ink: #8a6a35;
   --border: rgba(244, 241, 234, 0.08);
   --border-strong: rgba(244, 241, 234, 0.16);
 }
@@ -138,6 +141,62 @@ body::before {
 .focus-ring:focus-visible {
   outline: 2px solid var(--champagne);
   outline-offset: 3px;
+}
+
+/* ---------------------------------------------------------------------------
+   Printable paper sheet (AMOE entry forms).
+
+   Rendered light on screen as well as on paper, so what you see is what comes
+   out of the printer. Browsers strip backgrounds when printing unless told
+   otherwise, hence print-color-adjust — without it the gold headings drop to
+   grey and the sheet loses its rules.
+   --------------------------------------------------------------------------- */
+.paper {
+  background: #ffffff;
+  color: #14140f;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.paper .paper-accent {
+  color: var(--champagne-ink);
+}
+
+.paper .paper-muted {
+  color: #55524b;
+}
+
+.paper .paper-rule {
+  border-color: #b9b3a6;
+}
+
+@media print {
+  /* Nothing but the sheet: no dark page, no chrome, no shadows. */
+  html,
+  body {
+    background: #ffffff !important;
+  }
+
+  body::before {
+    display: none !important;
+  }
+
+  header,
+  footer,
+  .print-hide {
+    display: none !important;
+  }
+
+  .paper {
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  @page {
+    margin: 16mm;
+  }
 }
 
 /* Cover strip — panned by dragging or by finger, never by a scrollbar.

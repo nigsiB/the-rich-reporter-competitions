@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { createPortal } from "react-dom";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 import { MAGAZINE_URL, magazineCovers } from "@/data/magazineCovers";
@@ -125,6 +126,10 @@ export default function WhoWeAre() {
 
   const open = openIndex === null ? null : magazineCovers[openIndex];
 
+  // openIndex is only ever set by a click, so the portal cannot run during SSR
+  // or hydration; the document guard is belt-and-braces.
+  const canPortal = open !== null && typeof document !== "undefined";
+
   return (
     <section id="who-we-are" className="scroll-mt-28" aria-labelledby="who-we-are-heading">
       <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
@@ -218,9 +223,13 @@ export default function WhoWeAre() {
         ))}
       </ul>
 
-      {open ? (
+      {/* Portalled to <body>. Rendered in place, the surrounding FadeIn's
+          transform became the containing block for `position: fixed`, so the
+          overlay was pinned to this section rather than the viewport. */}
+      {canPortal && open
+        ? createPortal(
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--bg-deep)]/92 p-6 backdrop-blur-sm"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--bg-deep)]/95 p-6 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
           aria-labelledby={labelId}
@@ -303,8 +312,10 @@ export default function WhoWeAre() {
               </p>
             </div>
           </div>
-        </div>
-      ) : null}
+        </div>,
+            document.body,
+          )
+        : null}
     </section>
   );
 }

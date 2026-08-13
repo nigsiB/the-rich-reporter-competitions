@@ -48,6 +48,19 @@ export default function FadeIn({ children, className, delay = 0, y = 24 }: FadeI
     const reveal = () => {
       el.style.opacity = "1";
       el.style.transform = "translateY(0px)";
+
+      // Drop the inline transform once the animation is done. A non-none
+      // transform makes this element the containing block for any descendant
+      // using `position: fixed`, which silently traps modals inside the
+      // section instead of covering the viewport.
+      const cleanup = () => {
+        el.style.transform = "";
+        el.style.transition = "";
+        el.style.opacity = "";
+      };
+      el.addEventListener("transitionend", cleanup, { once: true });
+      // transitionend does not fire if the element is never painted.
+      window.setTimeout(cleanup, 900);
     };
 
     // Any callback at all — including the initial "not intersecting" one —

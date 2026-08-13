@@ -25,7 +25,7 @@ export default async function SiteFooter() {
           </p>
         </div>
 
-        <div className="mt-10 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+        <div className="mt-10 flex flex-col gap-8 border-t border-[var(--border)] pt-8 md:flex-row md:items-center md:justify-between md:gap-12">
           {/* shrink-0: in the row with the links this block was being squeezed,
               breaking the caption onto three lines. */}
           <div className="flex shrink-0 items-center gap-3">
@@ -69,7 +69,9 @@ export default async function SiteFooter() {
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-x-10 gap-y-4 text-[10px] uppercase tracking-[0.22em] text-[var(--muted)] md:max-w-2xl md:justify-end">
+          {/* Flex-wrapping these left ragged rows of 3 / 4 / 2 on a phone. A
+              grid keeps them in true columns; desktop returns to the row. */}
+          <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-[10px] uppercase tracking-[0.22em] text-[var(--muted)] sm:grid-cols-3 md:flex md:max-w-2xl md:flex-wrap md:gap-x-10 md:justify-end">
           <Link href="/membership" className="transition-colors hover:text-[var(--champagne)]">
             {dict.navMembership}
           </Link>

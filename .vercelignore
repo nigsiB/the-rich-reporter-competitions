@@ -1,8 +1,20 @@
 # `vercel deploy` uploads the working directory and honours THIS file, not
 # .gitignore — a gitignored file will still ship unless it is listed here.
 design-source/
-public/RR *.png
-public/KDC *.png
+
+# Raw supplied artwork keeps landing in public/ and getting served: the KDC
+# print ads, the logo sources, then the Dodge press shot. Naming each file
+# individually loses that race every time.
+#
+# Every asset the site actually uses lives in a subdirectory — public/logos/
+# or public/prizes/ — and everything legitimately at the top level of public/
+# is an SVG. So no top-level raster image is ever wanted.
+public/*.png
+public/*.jpg
+public/*.jpeg
+public/*.webp
+public/*.gif
+
 **/API keys.txt
 .env*
 !.env.example

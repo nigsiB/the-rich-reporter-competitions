@@ -45,8 +45,13 @@ yarn-error.log*
 # directory regardless of .gitignore. The processed, sized versions the site
 # actually uses live in public/logos/.
 design-source/
-public/RR *.png
-public/KDC *.png
+# Top level of public/ is SVGs only; real raster assets live in
+# public/logos/ and public/prizes/. See .vercelignore for the full reasoning.
+public/*.png
+public/*.jpg
+public/*.jpeg
+public/*.webp
+public/*.gif
 
 # vercel
 .vercel

@@ -29,6 +29,8 @@ type DbCompetition = {
   translations?: CompetitionTranslations | null;
   translations_cascade?: boolean | null;
   total_entries: number;
+  /** Maintained by trigger (migrations/012). Null before that migration runs. */
+  entries_remaining?: number | null;
   price_per_entry: number | string;
   cash_alternative?: number | string | null;
   retail_value?: number | string | null;
@@ -125,13 +127,21 @@ const fetchActiveCompetitions = unstable_cache(
     if (error || !data?.length) return localFallback();
 
     const rows = data as DbCompetition[];
-    // Concurrent, not sequential: total time is now the slowest count rather
-    // than the sum of all of them.
-    const counts = await Promise.all(rows.map((row) => countAvailable(supabase, row.id)));
+
+    // Post-migration the counter is already on the row, so nothing is counted
+    // at request time. Only rows still missing it fall back to a live count,
+    // and those run concurrently rather than one after another.
+    const remaining = await Promise.all(
+      rows.map(async (row) =>
+        typeof row.entries_remaining === "number"
+          ? row.entries_remaining
+          : ((await countAvailable(supabase, row.id)) ?? row.total_entries),
+      ),
+    );
 
     return {
       competitions: rows
-        .map((row, i) => mapCompetition(row, counts[i] ?? row.total_entries))
+        .map((row, i) => mapCompetition(row, remaining[i]))
         .slice(0, HOMEPAGE_LIMIT),
       source: "live" as const,
     };
@@ -165,8 +175,13 @@ const fetchCompetitionById = unstable_cache(
 
     if (error || !data) return null;
 
-    const available = await countAvailable(supabase, id);
-    return mapCompetition(data as DbCompetition, available ?? data.total_entries);
+    const row = data as DbCompetition;
+    const remaining =
+      typeof row.entries_remaining === "number"
+        ? row.entries_remaining
+        : ((await countAvailable(supabase, id)) ?? row.total_entries);
+
+    return mapCompetition(row, remaining);
   },
   ["competition-by-id"],
   { revalidate: 60, tags: ["competitions"] },

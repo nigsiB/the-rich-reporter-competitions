@@ -7,16 +7,28 @@ export default async function SiteFooter() {
 
   return (
     <footer className="border-t border-[var(--border)] bg-[var(--bg-deep)]">
-      <div className="mx-auto flex max-w-7xl flex-col gap-10 px-6 py-14 md:flex-row md:items-end md:justify-between md:px-10">
-        <div>
-          <BrandLogo />
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-[var(--muted)]">
+      <div className="mx-auto max-w-7xl px-6 py-14 md:px-10">
+        {/* Mobile keeps the original stack. From md the brand block becomes a
+            row — logo, then each paragraph beside it — because stacked in one
+            narrow column it left most of the footer width empty. */}
+        <div className="flex flex-col gap-8 md:flex-row md:items-start md:gap-12 lg:gap-16">
+          <div className="md:shrink-0">
+            <BrandLogo />
+          </div>
+
+          <p className="max-w-sm text-sm leading-relaxed text-[var(--muted)] md:flex-1">
             {dict.footerBlurb}
           </p>
-          <p className="mt-3 max-w-sm text-xs leading-relaxed text-[var(--muted)]/80">
+
+          <p className="max-w-sm text-xs leading-relaxed text-[var(--muted)]/80 md:flex-1">
             {dict.worldwide}
           </p>
-          <div className="mt-5 flex items-center gap-3">
+        </div>
+
+        <div className="mt-10 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+          {/* shrink-0: in the row with the links this block was being squeezed,
+              breaking the caption onto three lines. */}
+          <div className="flex shrink-0 items-center gap-3">
             {/* SVG rather than a bordered span: the ring keeps its weight at
                 any size and the glyph stays optically centred. */}
             <svg
@@ -56,8 +68,8 @@ export default async function SiteFooter() {
               Entrants must be 18 or over
             </p>
           </div>
-        </div>
-        <div className="flex flex-wrap gap-x-10 gap-y-4 text-[10px] uppercase tracking-[0.22em] text-[var(--muted)] md:max-w-xl md:justify-end">
+
+          <div className="flex flex-wrap gap-x-10 gap-y-4 text-[10px] uppercase tracking-[0.22em] text-[var(--muted)] md:max-w-2xl md:justify-end">
           <Link href="/membership" className="transition-colors hover:text-[var(--champagne)]">
             {dict.navMembership}
           </Link>
@@ -88,9 +100,10 @@ export default async function SiteFooter() {
           >
             Disclaimer
           </Link>
-          <Link href="/legal/mission" className="transition-colors hover:text-[var(--champagne)]">
-            Mission Statement
-          </Link>
+            <Link href="/legal/mission" className="transition-colors hover:text-[var(--champagne)]">
+              Mission Statement
+            </Link>
+          </div>
         </div>
       </div>
 

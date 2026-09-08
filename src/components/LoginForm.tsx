@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { signInAction } from "@/app/actions/auth";
 import { fieldClass, labelClass, primaryBtnClass } from "@/components/formStyles";
@@ -44,9 +45,17 @@ export default function LoginForm({ nextPath = "/", dict }: LoginFormProps) {
         <input id="email" name="email" type="email" required autoComplete="email" className={fieldClass} />
       </div>
       <div>
-        <label htmlFor="password" className={labelClass}>
-          {dict.formPassword}
-        </label>
+        <div className="mb-2 flex items-baseline justify-between gap-4">
+          <label htmlFor="password" className={`${labelClass} mb-0`}>
+            {dict.formPassword}
+          </label>
+          <Link
+            href="/forgot-password"
+            className="text-[10px] uppercase tracking-[0.2em] text-[var(--champagne)] transition-colors hover:text-[var(--fg)]"
+          >
+            Forgot password?
+          </Link>
+        </div>
         <input
           id="password"
           name="password"

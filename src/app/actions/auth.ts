@@ -85,7 +85,7 @@ export async function signUpMemberAction(
     email: input.email.trim(),
     password: input.password,
     options: {
-      emailRedirectTo: `${siteUrl}/login`,
+      emailRedirectTo: `${siteUrl}/auth/callback?next=/login`,
       data: {
         full_name: input.fullName.trim(),
         phone: input.phone.trim(),
@@ -298,6 +298,68 @@ export async function updateProfileAction(
 
   revalidatePath("/account");
   return { success: true, message: "Your profile has been updated." };
+}
+
+/**
+ * Send a password-reset email.
+ *
+ * Always reports success, even for an address that has no account: telling a
+ * caller which emails are registered turns this form into an account
+ * enumeration oracle.
+ *
+ * The link goes via /auth/callback, which exchanges the code for a session
+ * before handing off to /reset-password. Sending people straight at
+ * /reset-password would land them there with no session and nothing to do.
+ */
+export async function requestPasswordResetAction(email: string): Promise<ActionResult> {
+  if (!isSupabaseConfigured()) {
+    return { success: false, error: "Accounts are not connected yet." };
+  }
+
+  const address = email.trim();
+  if (!address) {
+    return { success: false, error: "Enter the email address on your account." };
+  }
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const supabase = await createClient();
+
+  await supabase.auth.resetPasswordForEmail(address, {
+    redirectTo: `${siteUrl}/auth/callback?next=/reset-password`,
+  });
+
+  return { success: true };
+}
+
+/**
+ * Set a new password using the session established by the recovery link.
+ * Requires that session, so a stale or reused link cannot change a password.
+ */
+export async function resetPasswordAction(password: string): Promise<ActionResult> {
+  if (!isSupabaseConfigured()) {
+    return { success: false, error: "Accounts are not connected yet." };
+  }
+
+  if (password.length < 8) {
+    return { success: false, error: "Password must be at least 8 characters." };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return {
+      success: false,
+      error: "That reset link has expired. Request a new one and try again.",
+    };
+  }
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) return { success: false, error: error.message };
+
+  return { success: true };
 }
 
 export async function changePasswordAction(

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { updateDisplayOrderAction } from "@/app/actions/admin";
+import { drawWinnerAction, updateDisplayOrderAction } from "@/app/actions/admin";
 import { primaryBtnClass } from "@/components/formStyles";
 import Link from "next/link";
 
@@ -27,6 +27,34 @@ export default function AdminCompetitionList({ competitions, source, error }: Pr
   );
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [drawing, setDrawing] = useState<string | null>(null);
+
+  const runDraw = async (id: string, title: string) => {
+    // Irreversible: the winner row is unique per competition, so there is no
+    // second attempt if the wrong competition is picked.
+    const ok = window.confirm(
+      `Draw the winner for "${title}"?\n\n` +
+        "This picks a winning ticket at random from the sold entries, records " +
+        "it publicly and closes the competition. It cannot be undone.",
+    );
+    if (!ok) return;
+
+    setDrawing(id);
+    setMessage("");
+    const result = await drawWinnerAction(id);
+    setDrawing(null);
+
+    if (!result.success || !result.data) {
+      setMessage(result.success ? "The draw returned no result." : result.error);
+      return;
+    }
+    const { ticketNumber, eligible, displayName } = result.data;
+    setMessage(
+      `${title}: ticket #${ticketNumber.toLocaleString("en-US")} won` +
+        (displayName ? ` (${displayName})` : "") +
+        ` — drawn from ${eligible.toLocaleString("en-US")} sold tickets.`,
+    );
+  };
 
   const move = (index: number, direction: -1 | 1) => {
     const next = index + direction;
@@ -132,6 +160,20 @@ export default function AdminCompetitionList({ competitions, source, error }: Pr
               >
                 Edit
               </Link>
+              {item.status === "completed" ? (
+                <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--muted)]">
+                  Drawn
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => runDraw(item.id, item.title)}
+                  disabled={drawing === item.id}
+                  className="border border-[var(--champagne)]/50 px-3 py-2 text-[10px] uppercase tracking-[0.18em] text-[var(--champagne)] transition-colors hover:bg-[var(--champagne)] hover:text-[var(--bg-deep)] disabled:opacity-40"
+                >
+                  {drawing === item.id ? "Drawing…" : "Draw winner"}
+                </button>
+              )}
             </div>
           </li>
         ))}

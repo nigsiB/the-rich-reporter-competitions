@@ -21,6 +21,39 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          // Stops the site being framed for clickjacking. SAMEORIGIN rather
+          // than DENY because Stripe Elements iframes live inside our own page.
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+          },
+        ],
+      },
+      {
+        // The old *.vercel.app host still serves the whole site, which would
+        // have Google indexing two copies. Rather than redirect it (that would
+        // also break preview deployments), tell crawlers to ignore that host
+        // only. The domain stays reachable as a fallback.
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "the-rich-reporter-competitions.vercel.app",
+          },
+        ],
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

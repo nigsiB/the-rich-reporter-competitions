@@ -260,6 +260,55 @@ async function generateTickets(
   );
 }
 
+/**
+ * Draw the winner for a competition.
+ *
+ * The selection itself lives in the `draw_winner` SQL function so that it is
+ * atomic: picking a ticket, recording the winner and closing the competition
+ * happen in one statement, and the UNIQUE constraint on winners.competition_id
+ * makes a double-draw impossible even if two admins click at once.
+ *
+ * The function re-checks admin rights itself. This gate is the friendly error,
+ * not the security boundary.
+ */
+export async function drawWinnerAction(
+  competitionId: string,
+): Promise<ActionResult<{ ticketNumber: number; eligible: number; displayName: string | null }>> {
+  const { error, supabase } = await requireAdmin();
+  if (error || !supabase) return { success: false, error };
+
+  const { data, error: rpcError } = await supabase.rpc("draw_winner", {
+    p_competition_id: competitionId,
+  });
+
+  if (rpcError) {
+    return { success: false, error: rpcError.message };
+  }
+
+  const result = data as {
+    ticket_number: number;
+    eligible_tickets: number;
+    display_name: string | null;
+  } | null;
+
+  if (!result) {
+    return { success: false, error: "The draw returned no result." };
+  }
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath(`/competitions/${competitionId}`);
+
+  return {
+    success: true,
+    data: {
+      ticketNumber: result.ticket_number,
+      eligible: result.eligible_tickets,
+      displayName: result.display_name,
+    },
+  };
+}
+
 export async function updateCompetitionAction(
   id: string,
   input: CompetitionAdminInput,

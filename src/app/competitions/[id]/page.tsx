@@ -6,6 +6,8 @@ import InventoryBar from "@/components/InventoryBar";
 import TicketCheckoutBtn from "@/components/TicketCheckoutBtn";
 import { competitions, formatUsd } from "@/data/competitions";
 import { getLiveCompetitionById } from "@/lib/competitions";
+import { getWinnerFor } from "@/lib/winners";
+import WinnerBanner from "@/components/WinnerBanner";
 import { getSessionProfile } from "@/app/actions/auth";
 import { getDictionary } from "@/i18n/getDictionary";
 import { t } from "@/i18n/dictionaries";
@@ -39,6 +41,7 @@ export default async function CompetitionPage({ params }: PageProps) {
   const { dict, locale } = await getDictionary();
   const competition = localizeCompetition(raw, locale);
   const { user } = await getSessionProfile();
+  const winner = await getWinnerFor(competition.id);
   const price = formatUsd(competition.pricePerEntry);
   const cashAlt = formatUsd(competition.cashAlternative);
   const returnPath = `/competitions/${competition.id}`;
@@ -96,13 +99,17 @@ export default async function CompetitionPage({ params }: PageProps) {
           </div>
 
           <div className="mt-10">
-            <TicketCheckoutBtn
-              competitionId={competition.id}
-              pricePerEntry={competition.pricePerEntry}
-              isAuthenticated={Boolean(user)}
-              returnPath={returnPath}
-              dict={dict}
-            />
+            {winner ? (
+              <WinnerBanner winner={winner} />
+            ) : (
+              <TicketCheckoutBtn
+                competitionId={competition.id}
+                pricePerEntry={competition.pricePerEntry}
+                isAuthenticated={Boolean(user)}
+                returnPath={returnPath}
+                dict={dict}
+              />
+            )}
           </div>
 
           <p className="mt-6 text-xs leading-relaxed text-[var(--muted)]">

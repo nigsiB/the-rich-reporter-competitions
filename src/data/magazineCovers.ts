@@ -19,6 +19,16 @@ const BASE = "https://therichreporter.com";
  */
 export const magazineCovers: MagazineCover[] = [
   {
+    title: "Fall Issue 2026",
+    date: "2026-08-17",
+    // No -768x… derivative exists for this upload, unlike the older covers:
+    // WordPress returns its HTML 404 page with a 200 status for those, so the
+    // scaled original is the smallest real file available.
+    thumb: `${BASE}/wp-content/uploads/2026/08/ONLINE-PDF-MAGAZINE_compressed-01-scaled.jpg`,
+    full: `${BASE}/wp-content/uploads/2026/08/ONLINE-PDF-MAGAZINE_compressed-01.jpg`,
+    href: `${BASE}/fall-issue-2026/`,
+  },
+  {
     title: "Summer Issue 2026",
     date: "2026-05-04",
     thumb: `${BASE}/wp-content/uploads/2026/05/Gene-Simmons-Cover-1-768x989.jpg`,

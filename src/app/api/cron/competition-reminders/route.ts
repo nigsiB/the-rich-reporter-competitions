@@ -20,13 +20,17 @@ function money(n: number) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
 }
 
-function body(c: CompetitionRow, hours: number, siteUrl: string) {
+function body(c: CompetitionRow, milestone: number, hoursLeft: number, siteUrl: string) {
   const sold = c.total_entries - (c.entries_remaining ?? c.total_entries);
   const takings = sold * Number(c.price_per_entry);
   const drawAt = c.draw_date
     ? new Date(c.draw_date).toLocaleString("en-GB", { dateStyle: "full", timeStyle: "short" })
     : "unknown";
-  const when = hours === 1 ? "in 1 hour" : `in ${hours} hours`;
+  // Report the time actually remaining, not the milestone. On a daily
+  // schedule the 12-hour reminder may genuinely fire with 9 hours left, and
+  // saying "12 hours" when it is 9 would be worse than useless.
+  const rounded = Math.max(1, Math.round(hoursLeft));
+  const when = rounded === 1 ? "in about 1 hour" : `in about ${rounded} hours`;
 
   const text = [
     `${c.title} closes ${when}.`,
@@ -96,7 +100,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Supabase is not configured" }, { status: 500 });
   }
 
-  const to = process.env.REMINDER_EMAIL_TO ?? "";
+  const to = process.env.ADMIN_NOTIFICATION_EMAIL ?? "";
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
 
   if (!isEmailConfigured() || !to) {
@@ -104,7 +108,7 @@ export async function GET(request: Request) {
     // plainly so a silent no-op is never mistaken for "nothing was due".
     return NextResponse.json({
       skipped: true,
-      reason: "email is not configured (RESEND_API_KEY, EMAIL_FROM, REMINDER_EMAIL_TO)",
+      reason: "email is not configured (RESEND_API_KEY, RESEND_FROM_EMAIL, ADMIN_NOTIFICATION_EMAIL)",
     });
   }
 
@@ -140,10 +144,12 @@ export async function GET(request: Request) {
 
       if (claimError) continue; // already sent, or claimed by a concurrent run
 
-      const { text, html } = body(c, milestone, siteUrl);
+      const { text, html } = body(c, milestone, hoursLeft, siteUrl);
       const result = await sendEmail({
         to,
-        subject: `${c.title} closes in ${milestone} hour${milestone === 1 ? "" : "s"}`,
+        subject: `${c.title} closes in about ${Math.max(1, Math.round(hoursLeft))} hour${
+          Math.round(hoursLeft) === 1 ? "" : "s"
+        }`,
         html,
         text,
       });

@@ -13,7 +13,7 @@ export type EmailResult =
   | { sent: false; reason: string };
 
 export function isEmailConfigured(): boolean {
-  return Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);
+  return Boolean(process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL);
 }
 
 export async function sendEmail({
@@ -21,17 +21,20 @@ export async function sendEmail({
   subject,
   html,
   text,
+  replyTo,
 }: {
   to: string;
   subject: string;
   html: string;
   text: string;
+  /** Lets the operator reply straight to an enquirer. */
+  replyTo?: string;
 }): Promise<EmailResult> {
   const key = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM;
+  const from = process.env.RESEND_FROM_EMAIL;
 
   if (!key || !from) {
-    return { sent: false, reason: "RESEND_API_KEY or EMAIL_FROM is not set" };
+    return { sent: false, reason: "RESEND_API_KEY or RESEND_FROM_EMAIL is not set" };
   }
   if (!to) {
     return { sent: false, reason: "no recipient configured" };
@@ -44,7 +47,14 @@ export async function sendEmail({
         Authorization: `Bearer ${key}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ from, to: [to], subject, html, text }),
+      body: JSON.stringify({
+        from,
+        to: [to],
+        subject,
+        html,
+        text,
+        ...(replyTo ? { reply_to: replyTo } : {}),
+      }),
     });
 
     if (!res.ok) {

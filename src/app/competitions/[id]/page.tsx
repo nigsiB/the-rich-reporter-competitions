@@ -5,7 +5,7 @@ import CountdownTimer from "@/components/CountdownTimer";
 import InventoryBar from "@/components/InventoryBar";
 import TicketCheckoutBtn from "@/components/TicketCheckoutBtn";
 import { competitions, formatUsd } from "@/data/competitions";
-import { getLiveCompetitionById } from "@/lib/competitions";
+import { getLiveCompetitionById, isEntryClosed } from "@/lib/competitions";
 import { getWinnerFor } from "@/lib/winners";
 import WinnerBanner from "@/components/WinnerBanner";
 import { getSessionProfile } from "@/app/actions/auth";
@@ -42,6 +42,7 @@ export default async function CompetitionPage({ params }: PageProps) {
   const competition = localizeCompetition(raw, locale);
   const { user } = await getSessionProfile();
   const winner = await getWinnerFor(competition.id);
+  const closed = isEntryClosed(competition);
   const price = formatUsd(competition.pricePerEntry);
   const cashAlt = formatUsd(competition.cashAlternative);
   const returnPath = `/competitions/${competition.id}`;
@@ -101,6 +102,16 @@ export default async function CompetitionPage({ params }: PageProps) {
           <div className="mt-10">
             {winner ? (
               <WinnerBanner winner={winner} />
+            ) : closed ? (
+              <div className="border border-[var(--border)] bg-[var(--bg-elevated)] px-6 py-8">
+                <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--champagne)]">
+                  Entries closed
+                </p>
+                <p className="mt-3 text-sm leading-relaxed text-[var(--muted)]">
+                  This competition is no longer open for entry. The winner will be drawn from the
+                  tickets already sold and announced on this page.
+                </p>
+              </div>
             ) : (
               <TicketCheckoutBtn
                 competitionId={competition.id}

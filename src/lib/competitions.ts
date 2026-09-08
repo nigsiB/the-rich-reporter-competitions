@@ -204,3 +204,17 @@ export async function getLiveCompetitionById(
     return local();
   }
 }
+
+/**
+ * A competition stops taking entries when its draw date passes or it leaves
+ * 'active' — after a draw, status becomes 'completed'.
+ *
+ * Lives here rather than inline in the components both because the rule should
+ * have one definition, and because calling Date.now() during a component
+ * render trips the compiler's impure-call rule.
+ */
+export function isEntryClosed(competition: Pick<Competition, "status" | "drawDate">): boolean {
+  if (competition.status !== "active") return true;
+  const draw = new Date(competition.drawDate).getTime();
+  return Number.isFinite(draw) && draw <= Date.now();
+}

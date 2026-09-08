@@ -271,6 +271,86 @@ async function generateTickets(
  * The function re-checks admin rights itself. This gate is the friendly error,
  * not the security boundary.
  */
+export type AdminWinner = {
+  competitionId: string;
+  competitionTitle: string;
+  ticketNumber: number;
+  displayName: string | null;
+  fullName: string | null;
+  email: string | null;
+  eligibleTickets: number;
+  drawnAt: string;
+  notifiedAt: string | null;
+  claimedAt: string | null;
+};
+
+/**
+ * Every drawn winner, with the contact details needed to actually award the
+ * prize. Admin-only: the public winner display deliberately shows nothing but
+ * an initialled name, so this is the only place a full name and email appear.
+ */
+export async function getAdminWinners(): Promise<{ winners: AdminWinner[]; error: string | null }> {
+  const { error, supabase } = await requireAdmin();
+  if (error || !supabase) return { winners: [], error };
+
+  const { data, error: qErr } = await supabase
+    .from("winners")
+    .select(
+      "competition_id,ticket_number,display_name,eligible_tickets,drawn_at,notified_at,claimed_at,user_id," +
+        "competitions(title),profiles(full_name,email)",
+    )
+    .order("drawn_at", { ascending: false });
+
+  if (qErr) {
+    // The winners table only exists once migration 013 has been applied.
+    return { winners: [], error: qErr.message };
+  }
+
+  type Row = {
+    competition_id: string;
+    ticket_number: number;
+    display_name: string | null;
+    eligible_tickets: number;
+    drawn_at: string;
+    notified_at: string | null;
+    claimed_at: string | null;
+    competitions: { title: string } | null;
+    profiles: { full_name: string | null; email: string | null } | null;
+  };
+
+  return {
+    winners: (data as unknown as Row[]).map((r) => ({
+      competitionId: r.competition_id,
+      competitionTitle: r.competitions?.title ?? "Competition",
+      ticketNumber: r.ticket_number,
+      displayName: r.display_name,
+      fullName: r.profiles?.full_name ?? null,
+      email: r.profiles?.email ?? null,
+      eligibleTickets: r.eligible_tickets,
+      drawnAt: r.drawn_at,
+      notifiedAt: r.notified_at,
+      claimedAt: r.claimed_at,
+    })),
+    error: null,
+  };
+}
+
+/** Record that a winner has been contacted, so it is not done twice. */
+export async function markWinnerNotifiedAction(competitionId: string): Promise<ActionResult> {
+  const { error, supabase } = await requireAdmin();
+  if (error || !supabase) return { success: false, error };
+
+  const { error: updateError } = await supabase
+    .from("winners")
+    .update({ notified_at: new Date().toISOString() })
+    .eq("competition_id", competitionId);
+
+  if (updateError) return { success: false, error: updateError.message };
+
+  revalidatePath("/admin/winners");
+  return { success: true };
+}
+
 export async function drawWinnerAction(
   competitionId: string,
 ): Promise<ActionResult<{ ticketNumber: number; eligible: number; displayName: string | null }>> {

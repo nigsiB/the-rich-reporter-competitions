@@ -26,6 +26,25 @@ export async function reserveTicketsAction(competitionId: string, quantity: numb
     return { success: false, error: "You must be logged in to enter." };
   }
 
+  // Entries must stop when the draw closes. Nothing enforced this before, so a
+  // competition past its draw date — or already drawn — still took money. The
+  // UI hides the control, but this is the guard that actually matters.
+  const { data: competition } = await supabase
+    .from("competitions")
+    .select("draw_date,status")
+    .eq("id", competitionId)
+    .single();
+
+  if (!competition) {
+    return { success: false, error: "That competition could not be found." };
+  }
+  if (competition.status !== "active") {
+    return { success: false, error: "This competition is closed to entries." };
+  }
+  if (competition.draw_date && new Date(competition.draw_date).getTime() <= Date.now()) {
+    return { success: false, error: "Entries for this competition have closed." };
+  }
+
   // Release any expired holds before reserving
   await supabase.rpc("release_expired_reservations", {
     p_minutes: Number(process.env.RESERVATION_EXPIRY_MINUTES ?? 15),

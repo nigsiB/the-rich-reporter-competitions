@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Competition } from "@/data/competitions";
 import { formatUsd } from "@/data/competitions";
+import { isEntryClosed } from "@/lib/competitions";
 import CountdownTimer from "@/components/CountdownTimer";
 import InventoryBar from "@/components/InventoryBar";
 import type { Dictionary, Locale } from "@/i18n/dictionaries";
@@ -23,6 +24,7 @@ export default function CompetitionCard({
 }: CompetitionCardProps) {
   const competition = localizeCompetition(raw, locale);
   const price = formatUsd(competition.pricePerEntry);
+  const closed = isEntryClosed(competition);
 
   return (
     <article className="hover-lift group flex h-full flex-col border border-transparent">
@@ -42,6 +44,11 @@ export default function CompetitionCard({
           className="absolute inset-0 bg-gradient-to-t from-[var(--bg-deep)]/75 via-[var(--bg-deep)]/15 to-transparent"
           aria-hidden="true"
         />
+        {closed ? (
+          <span className="absolute right-4 top-4 border border-[var(--champagne)]/60 bg-[var(--bg-deep)]/85 px-3 py-1.5 text-[9px] uppercase tracking-[0.24em] text-[var(--champagne)]">
+            Entries closed
+          </span>
+        ) : null}
         <div className="absolute bottom-0 left-0 right-0 p-6">
           <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--champagne)]">
             {dict.limitedTo} {competition.totalEntries.toLocaleString("en-US")} {dict.entriesWord}

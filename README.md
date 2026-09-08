@@ -2,7 +2,7 @@
 
 Luxury competition platform for Rich Reporter Magazine.
 
-**Live:** https://the-rich-reporter-competitions.vercel.app  
+**Live:** https://www.therichreportercomps.com  
 **Repo:** https://github.com/nigsiB/the-rich-reporter-competitions
 
 ## Stack

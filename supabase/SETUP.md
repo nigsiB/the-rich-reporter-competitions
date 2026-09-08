@@ -9,10 +9,10 @@
    - `service_role` / `secret` key → `SUPABASE_SERVICE_ROLE_KEY` (server only — JWT `eyJ…` or `sb_secret_…`, **not** the Postgres connection string)
 3. **Authentication → Providers → Email** — enable
 4. **Authentication → URL Configuration** (required — wrong Site URL sends confirm emails to localhost)
-   - Site URL: `https://the-rich-reporter-competitions.vercel.app` (or your custom domain)
+   - Site URL: `https://www.therichreportercomps.com` (or your custom domain)
    - Redirect URLs (allow list), one per line or comma-separated:
-     - `https://the-rich-reporter-competitions.vercel.app/**`
-     - `https://the-rich-reporter-competitions.vercel.app/login`
+     - `https://www.therichreportercomps.com/**`
+     - `https://www.therichreportercomps.com/login`
      - `http://localhost:3000/**` (local dev only)
    - Signup uses `emailRedirectTo: ${NEXT_PUBLIC_SITE_URL}/login` — Site URL + allow list must match production
 5. **Database → Replication** — enable Realtime for table `tickets` (for live inventory)
@@ -54,7 +54,7 @@ Add the same keys for Production (and Preview if desired). Redeploy after saving
 2. Create a Product with a **recurring monthly Price** for Patron Circle → copy Price ID → `STRIPE_MONTHLY_PRICE_ID`
 3. Enable international payment methods you want in Dashboard → Settings → Payment methods (cards + Link are wired in code; add local APMs as needed)
 4. Developers → Webhooks → Add endpoint:
-   `https://the-rich-reporter-competitions.vercel.app/api/stripe/webhook`
+   `https://www.therichreportercomps.com/api/stripe/webhook`
    Events:
    - `payment_intent.succeeded`
    - `payment_intent.payment_failed`
@@ -106,4 +106,22 @@ Set `CRON_SECRET` in Vercel so the cron endpoint can authorize.
 
 ## 7. Custom domain
 
-See root `README.md` — recommend `competitions.therichreporter.com`.
+Live on **`therichreportercomps.com`** (GoDaddy registrar, GoDaddy DNS).
+
+`www` is the canonical host; the apex 308-redirects to it. Use the `www` form
+everywhere — `NEXT_PUBLIC_SITE_URL`, the Supabase Site URL and redirect allow
+list, and the Stripe webhook endpoint. Pointing any of them at the apex sends
+auth tokens through a redirect hop, which is fragile.
+
+DNS records at GoDaddy:
+
+| type  | name | value                                    |
+|-------|------|------------------------------------------|
+| A     | `@`  | `216.198.79.1`                           |
+| CNAME | `www`| `5fca52bd4912b940.vercel-dns-017.com`    |
+
+The CNAME target is issued per project by Vercel — read it from
+Project → Settings → Domains rather than copying it from here.
+
+`NEXT_PUBLIC_SITE_URL` is inlined at build time, so changing it in Vercel has
+no effect until the project is redeployed.

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   deleteCompetitionAction,
@@ -29,6 +30,7 @@ export default function AdminCompetitionList({ competitions, source, error }: Pr
   const [items, setItems] = useState(
     [...competitions].sort((a, b) => a.display_order - b.display_order),
   );
+  const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [drawing, setDrawing] = useState<string | null>(null);
@@ -54,6 +56,7 @@ export default function AdminCompetitionList({ competitions, source, error }: Pr
       return;
     }
     setItems((prev) => prev.filter((item) => item.id !== id));
+    router.refresh();
     setMessage(`"${title}" deleted.`);
   };
 
@@ -73,9 +76,25 @@ export default function AdminCompetitionList({ competitions, source, error }: Pr
     setDrawing(null);
 
     if (!result.success || !result.data) {
-      setMessage(result.success ? "The draw returned no result." : result.error);
+      const reason = result.success ? "The draw returned no result." : result.error;
+      // If the database says it is already drawn, our row is simply stale.
+      if (!result.success && /already been drawn/i.test(result.error)) {
+        setItems((prev) =>
+          prev.map((item) => (item.id === id ? { ...item, status: "completed" } : item)),
+        );
+        router.refresh();
+      }
+      setMessage(reason);
       return;
     }
+    // The list keeps its own copy of the rows, so without this the row stayed
+    // on "active" with a live Draw button after a successful draw — inviting a
+    // second click that the database then refused.
+    setItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, status: "completed" } : item)),
+    );
+    router.refresh();
+
     const { ticketNumber, eligible, displayName } = result.data;
     setMessage(
       `${title}: ticket #${ticketNumber.toLocaleString("en-US")} won` +

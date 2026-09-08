@@ -9,7 +9,6 @@ import type {
   CompetitionTranslations,
 } from "@/lib/types";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 const TRANSLATION_LOCALES = ["es", "fr", "de", "pt", "it"] as const;
 
@@ -271,6 +270,81 @@ async function generateTickets(
  * The function re-checks admin rights itself. This gate is the friendly error,
  * not the security boundary.
  */
+/**
+ * Permanently remove a competition, its tickets and its winner record.
+ *
+ * Deleting the competition cascades to both, but cascading hundreds of
+ * thousands of ticket rows in one statement exceeds Supabase's 8s limit and
+ * rolls the whole thing back — which is how the test competitions first
+ * refused to delete. The tickets go first, in windows, so the final delete is
+ * cheap.
+ *
+ * This destroys the winner record too, so it is only offered for competitions
+ * that have been drawn and are being tidied away deliberately.
+ */
+export async function deleteCompetitionAction(id: string): Promise<ActionResult> {
+  const { error, supabase } = await requireAdmin();
+  if (error || !supabase) return { success: false, error };
+
+  const { count: total } = await supabase
+    .from("tickets")
+    .select("id", { count: "exact", head: true })
+    .eq("competition_id", id);
+
+  const STEP = 20_000;
+  const MAX_WINDOWS = 200; // ~4M tickets; far beyond anything realistic
+
+  for (let i = 0, from = 1; i < MAX_WINDOWS; i++, from += STEP) {
+    const { count: left } = await supabase
+      .from("tickets")
+      .select("id", { count: "exact", head: true })
+      .eq("competition_id", id);
+
+    if (!left) break;
+
+    const { error: delError } = await supabase
+      .from("tickets")
+      .delete()
+      .eq("competition_id", id)
+      .gte("ticket_number", from)
+      .lte("ticket_number", from + STEP - 1);
+
+    if (delError) {
+      return {
+        success: false,
+        error:
+          `Removed part of the inventory but stopped at ticket ${from.toLocaleString()}: ` +
+          `${delError.message}. The competition still exists — try again to continue.`,
+      };
+    }
+  }
+
+  const { count: remaining } = await supabase
+    .from("tickets")
+    .select("id", { count: "exact", head: true })
+    .eq("competition_id", id);
+
+  if (remaining) {
+    return {
+      success: false,
+      error: `${remaining.toLocaleString()} tickets could not be removed. The competition has been left in place.`,
+    };
+  }
+
+  const { error: compError } = await supabase.from("competitions").delete().eq("id", id);
+  if (compError) return { success: false, error: compError.message };
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath("/admin/winners");
+
+  return {
+    success: true,
+    data: undefined,
+    message: `Deleted, along with ${(total ?? 0).toLocaleString()} tickets and its winner record.`,
+  } as ActionResult;
+}
+
 export type AdminWinner = {
   competitionId: string;
   competitionTitle: string;
@@ -476,18 +550,6 @@ export async function updateDisplayOrderAction(
   revalidatePath("/");
   revalidatePath("/admin");
   return { success: true, message: "Order saved." };
-}
-
-export async function deleteCompetitionAction(id: string): Promise<ActionResult> {
-  const { error, supabase } = await requireAdmin();
-  if (error || !supabase) return { success: false, error };
-
-  const { error: deleteError } = await supabase.from("competitions").delete().eq("id", id);
-  if (deleteError) return { success: false, error: deleteError.message };
-
-  revalidatePath("/");
-  revalidatePath("/admin");
-  redirect("/admin");
 }
 
 export async function listAdminCompetitions() {

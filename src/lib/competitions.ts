@@ -205,6 +205,46 @@ export async function getLiveCompetitionById(
   }
 }
 
+/** How many finished draws to show under the live ones. */
+const PAST_DRAWS_LIMIT = 6;
+
+/**
+ * Recently completed competitions.
+ *
+ * Drawing a competition sets it to 'completed', which drops it out of the
+ * homepage query — so a prize that had been on the page all week simply
+ * disappeared the moment it was won. That reads as a fault, and it throws away
+ * the most persuasive thing a competition site has: visible, checkable
+ * results.
+ */
+const fetchCompletedCompetitions = unstable_cache(
+  async () => {
+    const supabase = createPublicClient();
+    const { data, error } = await supabase
+      .from("competitions")
+      .select("*")
+      .eq("status", "completed")
+      .order("updated_at", { ascending: false })
+      .limit(PAST_DRAWS_LIMIT);
+
+    if (error || !data?.length) return [] as Competition[];
+    return (data as DbCompetition[]).map((row) =>
+      mapCompetition(row, row.entries_remaining ?? 0),
+    );
+  },
+  ["completed-competitions"],
+  { revalidate: 60, tags: ["competitions"] },
+);
+
+export async function getCompletedCompetitions(): Promise<Competition[]> {
+  if (!isSupabaseConfigured()) return [];
+  try {
+    return await fetchCompletedCompetitions();
+  } catch {
+    return [];
+  }
+}
+
 /**
  * A competition stops taking entries when its draw date passes or it leaves
  * 'active' — after a draw, status becomes 'completed'.

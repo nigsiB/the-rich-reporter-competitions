@@ -4,11 +4,17 @@ import CompetitionGrid from "@/components/CompetitionGrid";
 import FadeIn from "@/components/motion/FadeIn";
 import HeroBackdrop from "@/components/motion/HeroBackdrop";
 import WhoWeAre from "@/components/WhoWeAre";
-import { getActiveCompetitions } from "@/lib/competitions";
+import { getActiveCompetitions, getCompletedCompetitions } from "@/lib/competitions";
+import { getWinners } from "@/lib/winners";
+import PastDraws from "@/components/PastDraws";
 import { getDictionary } from "@/i18n/getDictionary";
 
 export default async function HomePage() {
   const { competitions } = await getActiveCompetitions();
+  const [pastDraws, winners] = await Promise.all([
+    getCompletedCompetitions(),
+    getWinners(),
+  ]);
   const { dict, locale } = await getDictionary();
 
   return (
@@ -51,6 +57,12 @@ export default async function HomePage() {
 
       <div className="mx-auto max-w-7xl space-y-28 px-6 py-24 md:px-10 md:py-32">
         <CompetitionGrid competitions={competitions} dict={dict} locale={locale} />
+
+        {pastDraws.length ? (
+          <FadeIn>
+            <PastDraws competitions={pastDraws} winners={winners} />
+          </FadeIn>
+        ) : null}
 
         <FadeIn>
           <section id="how-it-works" className="scroll-mt-28" aria-labelledby="membership-heading">

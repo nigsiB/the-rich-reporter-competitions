@@ -297,7 +297,7 @@ export async function getAdminWinners(): Promise<{ winners: AdminWinner[]; error
     .from("winners")
     .select(
       "competition_id,ticket_number,display_name,eligible_tickets,drawn_at,notified_at,claimed_at,user_id," +
-        "competitions(title),profiles(full_name,email)",
+        "competitions(title)",
     )
     .order("drawn_at", { ascending: false });
 
@@ -314,23 +314,48 @@ export async function getAdminWinners(): Promise<{ winners: AdminWinner[]; error
     drawn_at: string;
     notified_at: string | null;
     claimed_at: string | null;
+    user_id: string | null;
     competitions: { title: string } | null;
-    profiles: { full_name: string | null; email: string | null } | null;
   };
 
+  const rows = (data as unknown as Row[]) ?? [];
+
+  // Profiles are fetched separately rather than embedded. PostgREST can only
+  // embed across a declared foreign key, and winners.user_id deliberately has
+  // none — a winner record must survive the member's account being deleted.
+  const userIds = [...new Set(rows.map((r) => r.user_id).filter((id): id is string => !!id))];
+
+  const contacts = new Map<string, { full_name: string | null; email: string | null }>();
+  if (userIds.length) {
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("id,full_name,email")
+      .in("id", userIds);
+    for (const p of (profiles ?? []) as {
+      id: string;
+      full_name: string | null;
+      email: string | null;
+    }[]) {
+      contacts.set(p.id, { full_name: p.full_name, email: p.email });
+    }
+  }
+
   return {
-    winners: (data as unknown as Row[]).map((r) => ({
-      competitionId: r.competition_id,
-      competitionTitle: r.competitions?.title ?? "Competition",
-      ticketNumber: r.ticket_number,
-      displayName: r.display_name,
-      fullName: r.profiles?.full_name ?? null,
-      email: r.profiles?.email ?? null,
-      eligibleTickets: r.eligible_tickets,
-      drawnAt: r.drawn_at,
-      notifiedAt: r.notified_at,
-      claimedAt: r.claimed_at,
-    })),
+    winners: rows.map((r) => {
+      const contact = r.user_id ? contacts.get(r.user_id) : undefined;
+      return {
+        competitionId: r.competition_id,
+        competitionTitle: r.competitions?.title ?? "Competition",
+        ticketNumber: r.ticket_number,
+        displayName: r.display_name,
+        fullName: contact?.full_name ?? null,
+        email: contact?.email ?? null,
+        eligibleTickets: r.eligible_tickets,
+        drawnAt: r.drawn_at,
+        notifiedAt: r.notified_at,
+        claimedAt: r.claimed_at,
+      };
+    }),
     error: null,
   };
 }

@@ -40,6 +40,13 @@ export async function sendEmail({
     return { sent: false, reason: "no recipient configured" };
   }
 
+  // The From address is a send-only identity on the verified domain — there is
+  // no mailbox behind it and no MX record at the apex, so a reply to it would
+  // vanish. Default Reply-To to the operator so replying always reaches a real
+  // person. Callers that know better override it: the contact form points
+  // Reply-To at the enquirer so the operator can answer them directly.
+  const replyAddress = replyTo || process.env.ADMIN_NOTIFICATION_EMAIL || undefined;
+
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -53,7 +60,7 @@ export async function sendEmail({
         subject,
         html,
         text,
-        ...(replyTo ? { reply_to: replyTo } : {}),
+        ...(replyAddress ? { reply_to: replyAddress } : {}),
       }),
     });
 

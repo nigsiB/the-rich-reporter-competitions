@@ -2,9 +2,25 @@
 
 import Image from "next/image";
 import { createPortal } from "react-dom";
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 
 import { MAGAZINE_URL, magazineCovers } from "@/data/magazineCovers";
+
+// "Drag" is the wrong verb on a phone. Read as an external store so the server
+// renders the desktop wording and the client corrects it without a flash.
+const COARSE = "(hover: none)";
+const subscribeCoarse = (onChange: () => void) => {
+  const mq = window.matchMedia(COARSE);
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+};
 
 /**
  * A single horizontal strip of covers you can pan left and right — newest
@@ -19,6 +35,12 @@ export default function WhoWeAre() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(false);
+  const [hint, setHint] = useState<"idle" | "leaving" | "gone">("idle");
+  const touch = useSyncExternalStore(
+    subscribeCoarse,
+    () => window.matchMedia(COARSE).matches,
+    () => false,
+  );
   const closeRef = useRef<HTMLButtonElement>(null);
   const labelId = useId();
 
@@ -29,12 +51,28 @@ export default function WhoWeAre() {
     setCanRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
   }, []);
 
+  /** The hint has done its job the moment the strip is touched at all. */
+  const dismissHint = useCallback(() => {
+    setHint((s) => (s === "idle" ? "leaving" : s));
+  }, []);
+
+  useEffect(() => {
+    if (hint !== "leaving") return;
+    const t = window.setTimeout(() => setHint("gone"), 340);
+    return () => window.clearTimeout(t);
+  }, [hint]);
+
   useEffect(() => {
     syncArrows();
     const el = strip.current;
     if (!el) return;
 
-    el.addEventListener("scroll", syncArrows, { passive: true });
+    const onScroll = () => {
+      syncArrows();
+      dismissHint();
+    };
+
+    el.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", syncArrows);
 
     // scrollWidth is wrong until the covers have loaded, which left the right
@@ -46,11 +84,11 @@ export default function WhoWeAre() {
     }
 
     return () => {
-      el.removeEventListener("scroll", syncArrows);
+      el.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", syncArrows);
       ro.disconnect();
     };
-  }, [syncArrows]);
+  }, [syncArrows, dismissHint]);
 
   /**
    * Eased pan, driven by our own rAF loop rather than `behavior: "smooth"`,
@@ -59,6 +97,7 @@ export default function WhoWeAre() {
   const page = (dir: -1 | 1) => {
     const el = strip.current;
     if (!el) return;
+    dismissHint();
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const distance = dir * Math.max(el.clientWidth * 0.8, 240);
@@ -86,6 +125,7 @@ export default function WhoWeAre() {
   // Click-and-drag panning for mouse users.
   const drag = useRef({ active: false, startX: 0, startScroll: 0, moved: false });
   const onPointerDown = (e: React.PointerEvent) => {
+    dismissHint(); // every pointer type, not just the mouse drag below
     if (e.pointerType !== "mouse" || !strip.current) return;
     drag.current = {
       active: true,
@@ -184,12 +224,14 @@ export default function WhoWeAre() {
         </div>
       </div>
 
+      <div className="relative">
       <ul
         ref={strip}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
         onPointerLeave={endDrag}
+        onWheel={dismissHint}
         // No scroll-snap: it quantises the eased pan to one cover per frame,
         // so the animation lands in 200px steps instead of gliding.
         className="cover-strip flex select-none gap-5 overflow-x-auto pb-2"
@@ -222,6 +264,66 @@ export default function WhoWeAre() {
           </li>
         ))}
       </ul>
+
+        {/* Nothing to advertise if every cover already fits. `canRight` is
+            measured after the images load, so this appears only once the strip
+            is genuinely pannable. */}
+        {hint !== "gone" && canRight ? (
+          <div
+            aria-hidden="true"
+            className={`pan-hint absolute inset-0 z-[2] flex items-center justify-center ${
+              hint === "leaving" ? "pan-hint--out" : ""
+            }`}
+          >
+            <span className="flex flex-col items-center gap-2 border border-[var(--champagne)]/40 bg-[var(--bg-deep)]/85 px-6 py-4 backdrop-blur-sm">
+              <span className="flex items-center gap-3 text-[var(--champagne)]">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="pan-hint__chevron--left h-3.5 w-3.5"
+                >
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
+
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="pan-hint__hand h-7 w-7"
+                >
+                  <path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2" />
+                  <path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2" />
+                  <path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8" />
+                  <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
+                </svg>
+
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="pan-hint__chevron--right h-3.5 w-3.5"
+                >
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </span>
+
+              <span className="text-[10px] uppercase tracking-[0.24em] text-[var(--fg)]">
+                {touch ? "Swipe to explore" : "Drag to explore"}
+              </span>
+            </span>
+          </div>
+        ) : null}
+      </div>
 
       {/* Portalled to <body>. Rendered in place, the surrounding FadeIn's
           transform became the containing block for `position: fixed`, so the

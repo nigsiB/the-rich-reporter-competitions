@@ -347,3 +347,94 @@ body::before {
     transform: scaleX(1);
   }
 }
+
+/* Pan hint — a hand swaying over the cover strip until the visitor touches it.
+   Purely decorative: pointer-events stay off so it never swallows the very
+   drag it is advertising. */
+.pan-hint {
+  pointer-events: none;
+  animation: pan-hint-in 620ms cubic-bezier(0.22, 1, 0.36, 1) 700ms both;
+}
+
+.pan-hint--out {
+  animation: pan-hint-out 320ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.pan-hint__hand {
+  animation: pan-hint-drift 2.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.pan-hint__chevron--left {
+  animation: pan-hint-chevron-left 2.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.pan-hint__chevron--right {
+  animation: pan-hint-chevron-right 2.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes pan-hint-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pan-hint-out {
+  to {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
+@keyframes pan-hint-drift {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(13px) rotate(8deg);
+  }
+  75% {
+    transform: translateX(-13px) rotate(-8deg);
+  }
+}
+
+/* Each chevron lights up as the hand travels towards it. */
+@keyframes pan-hint-chevron-right {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateX(0);
+  }
+  25% {
+    opacity: 1;
+    transform: translateX(3px);
+  }
+}
+
+@keyframes pan-hint-chevron-left {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateX(0);
+  }
+  75% {
+    opacity: 1;
+    transform: translateX(-3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Still shown — it carries information — but held still and evenly lit. */
+  .pan-hint__hand,
+  .pan-hint__chevron--left,
+  .pan-hint__chevron--right {
+    animation: none !important;
+    opacity: 0.75;
+    transform: none;
+  }
+}
